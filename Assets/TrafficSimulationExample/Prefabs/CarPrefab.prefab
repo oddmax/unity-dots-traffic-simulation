@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -8183715153246599309}
   - component: {fileID: 5292173198427172811}
   m_Layer: 0
-  m_Name: generic_car
+  m_Name: CarPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 3156776542280840674}
   m_LocalRotation: {x: -0.000000030171492, y: -0.7071069, z: -0.70710677, w: 0.000000037252903}
   m_LocalPosition: {x: 0.00000015771231, y: 0, z: -0.0000011915993}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 0
   SegmentId: 0
+  Segment: {fileID: 0}
   Speed: 2
   MovementDirection:
     x: 0
