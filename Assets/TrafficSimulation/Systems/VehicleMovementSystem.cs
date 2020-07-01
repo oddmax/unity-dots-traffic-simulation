@@ -27,10 +27,11 @@ namespace TrafficSimulation.Systems
             //TODO find out why name "UnitDenormalizedJob"?
             //TODO why translation is passed by 'ref' and custom component by 'in'
             var vehicleJob = Entities.WithName("UnitDenormalizedJob")
-                .ForEach((Entity entity, int entityInQueryIndex, ref Translation translation,
+                .ForEach((Entity entity, int entityInQueryIndex, ref Translation translation, ref Rotation rotation,
                     in VehicleComponent vehicleComponent) =>
                 {
                     var newTrans = translation;
+                    var newRotation = rotation;
 
                     float3 target = vehicleComponent.Target;
                     float3 delta = target - newTrans.Value;
@@ -43,8 +44,11 @@ namespace TrafficSimulation.Systems
                     else
                     {
                         newTrans.Value += math.normalize(delta) * frameSpeed;
+                        newRotation.Value = quaternion.LookRotation(delta, math.up());
                     }
 
+                   
+                    rotation = newRotation;
                     translation = newTrans;
 
                 }).Schedule(inputDeps);
