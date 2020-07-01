@@ -98,8 +98,12 @@ MonoBehaviour:
   Id: 0
   SegmentId: 0
   Segment: {fileID: 0}
-  Speed: 2
+  Speed: 4
   MovementDirection:
+    x: 0
+    y: 0
+    z: 0
+  Target:
     x: 0
     y: 0
     z: 0

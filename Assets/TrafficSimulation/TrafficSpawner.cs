@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TrafficSimulation;
 using TrafficSimulation.Components;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -66,10 +67,16 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
                 vehicleComponent.Segment = segmentEntity;
                 vehicleComponent.CurrentSegPos = Random.Range(0f, 1f);
                 
-                dstManager.SetComponentData(carEntity, vehicleComponent);
                 
                 var translation = dstManager.GetComponentData<Translation>(carEntity);
-                translation.Value = Vector3.zero;
+                
+                var startNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.StartNode);
+                var endNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.EndNode);
+                
+                translation.Value = math.lerp(endNodeComponent.Position, startNodeComponent.Position, vehicleComponent.CurrentSegPos);
+                vehicleComponent.Target = endNodeComponent.Position;
+                
+                dstManager.SetComponentData(carEntity, vehicleComponent);
                 dstManager.SetComponentData(carEntity, translation);
             }
         }

@@ -11,6 +11,7 @@ namespace TrafficSimulation.Components
         public Entity Segment;
         public float Speed;
         public float3 MovementDirection;
+        public float3 Target;
         public float CurrentSegPos;
     }
 }
