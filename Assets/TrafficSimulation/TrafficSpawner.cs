@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TrafficSimulation;
 using TrafficSimulation.Components;
+using TrafficSimulation.Components.Buffers;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -27,7 +28,7 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
             foreach (var roadNode in NodesToCreate)
             {
                 var roadNodeEntity = dstManager.CreateEntity(typeof(RoadNodeComponent));
-                
+                dstManager.AddBuffer<ConnectedSegmentBufferElement>(roadNodeEntity);
                 var roadNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(roadNodeEntity);
                 roadNodeComponent.Position = roadNode.transform.position;
                 
@@ -48,6 +49,9 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
                     segment.EndNode.transform.position);
                 segmentComponent.MovementDirection = segment.EndNode.transform.position -
                                                      segment.StartNode.transform.position;
+
+                var nodeBuffer = dstManager.GetBuffer<ConnectedSegmentBufferElement>(segmentComponent.StartNode);
+                nodeBuffer.Add(new ConnectedSegmentBufferElement { segment = segmentEntity });
                 
                 dstManager.SetComponentData(segmentEntity, segmentComponent);
                 
