@@ -7,6 +7,7 @@ using Unity.Transforms;
 
 namespace TrafficSimulation.Systems
 {
+    [UpdateBefore(typeof(TrafficVehicleSegmentChooseSystem))] 
     public class VehicleMovementSystem : JobComponentSystem
     {
         EndSimulationEntityCommandBufferSystem endSimulationEcbSystem;
@@ -23,6 +24,7 @@ namespace TrafficSimulation.Systems
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             var time = Time.DeltaTime;
+            var ecb = endSimulationEcbSystem.CreateCommandBuffer().ToConcurrent();
             
             //TODO find out why name "UnitDenormalizedJob"?
             //TODO why translation is passed by 'ref' and custom component by 'in'
@@ -40,6 +42,7 @@ namespace TrafficSimulation.Systems
                     if (math.length(delta) < frameSpeed)
                     {
                         newTrans.Value = target;
+                        ecb.AddComponent(entityInQueryIndex, entity, new HasReachedNodeComponent());
                     }
                     else
                     {
@@ -47,12 +50,12 @@ namespace TrafficSimulation.Systems
                         newRotation.Value = quaternion.LookRotation(delta, math.up());
                     }
 
-                   
                     rotation = newRotation;
                     translation = newTrans;
 
                 }).Schedule(inputDeps);
-
+            
+            endSimulationEcbSystem.AddJobHandleForProducer(vehicleJob);
             return vehicleJob;
         }
     }
