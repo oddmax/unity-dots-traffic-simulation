@@ -2,7 +2,8 @@ using Unity.Entities;
 
 namespace TrafficSimulation.Components
 {
-    public struct VehicleTarget : IComponentData
+    [GenerateAuthoringComponent]
+    public struct VehicleSegmentInfoComponent : IComponentData
     {
         public Entity Segment;
         public Entity NextNode;

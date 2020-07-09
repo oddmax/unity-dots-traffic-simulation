@@ -341,6 +341,7 @@ GameObject:
   - component: {fileID: 4741488720421096676}
   - component: {fileID: 3090844058903631596}
   - component: {fileID: 4509036311583401599}
+  - component: {fileID: 2496310572289426316}
   m_Layer: 0
   m_Name: CarPrefab2
   m_TagString: Untagged
@@ -432,9 +433,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb63154e6bba42b99a7f85e19bf96f2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 0
-  SegmentId: 0
-  Segment: {fileID: 0}
   Speed: 4
   MovementDirection:
     x: 0
@@ -458,3 +456,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversionMode: 0
+--- !u!114 &2496310572289426316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8546581434592742113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03039aa24d64c179475e86393095870, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Segment: {fileID: 0}
+  NextNode: {fileID: 0}

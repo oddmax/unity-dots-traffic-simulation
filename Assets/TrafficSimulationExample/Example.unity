@@ -596,18 +596,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ddfbec2ef3849679eb6c211eeae906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CarToSpawn: 4
+  CarToSpawn: 25
   CarPrefab: {fileID: 8546581434592742113, guid: ab59828010b844441865513a233d6d1c, type: 3}
   NodesToCreate:
   - {fileID: 1519889637}
   - {fileID: 579499218}
   - {fileID: 1290177326}
   - {fileID: 554137012}
+  - {fileID: 359687186}
+  - {fileID: 1772169901}
   SegmentsToCreate:
   - {fileID: 110766384}
   - {fileID: 1988612443}
   - {fileID: 494552109}
   - {fileID: 492561473}
+  - {fileID: 67435902}
+  - {fileID: 707787484}
+  - {fileID: 638782740}
 --- !u!4 &56083048
 Transform:
   m_ObjectHideFlags: 0
