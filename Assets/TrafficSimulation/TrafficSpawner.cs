@@ -63,24 +63,27 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
                 var carEntity = dstManager.Instantiate(carPrefab);
 
                 var vehicleComponent = dstManager.GetComponentData<VehicleComponent>(carEntity);
+                var vehicleSegmentInfoComponent = dstManager.GetComponentData<VehicleSegmentInfoComponent>(carEntity);
 
                 var segmentIndex = Random.Range(0, segments.Count);
                 var segmentEntity = segments[segmentIndex];
                 var segmentComponent = dstManager.GetComponentData<SegmentComponent>(segmentEntity);
-
-                vehicleComponent.Segment = segmentEntity;
+               
                 vehicleComponent.CurrentSegPos = Random.Range(0f, 1f);
-                
                 
                 var translation = dstManager.GetComponentData<Translation>(carEntity);
                 
                 var startNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.StartNode);
                 var endNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.EndNode);
                 
+                vehicleSegmentInfoComponent.Segment = segmentEntity;
+                vehicleSegmentInfoComponent.NextNode = segmentComponent.EndNode;
+                
                 translation.Value = math.lerp(endNodeComponent.Position, startNodeComponent.Position, vehicleComponent.CurrentSegPos);
                 vehicleComponent.Target = endNodeComponent.Position;
                 
                 dstManager.SetComponentData(carEntity, vehicleComponent);
+                dstManager.SetComponentData(carEntity, vehicleSegmentInfoComponent);
                 dstManager.SetComponentData(carEntity, translation);
             }
         }

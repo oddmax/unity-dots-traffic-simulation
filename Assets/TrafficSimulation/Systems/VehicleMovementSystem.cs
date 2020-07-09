@@ -1,14 +1,12 @@
 using TrafficSimulation.Components;
-using Unity.Collections;
+using TrafficSimulation.Components.Buffers;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace TrafficSimulation.Systems
 {
-    [UpdateBefore(typeof(TrafficVehicleSegmentChooseSystem))] 
-    public class VehicleMovementSystem : JobComponentSystem
+    public class VehicleMovementSystem : SystemBase
     {
         EndSimulationEntityCommandBufferSystem endSimulationEcbSystem;
         
@@ -21,21 +19,24 @@ namespace TrafficSimulation.Systems
                 .GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         }
         
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
         {
             var time = Time.DeltaTime;
             var ecb = endSimulationEcbSystem.CreateCommandBuffer().ToConcurrent();
             
-            //TODO find out why name "UnitDenormalizedJob"?
-            //TODO why translation is passed by 'ref' and custom component by 'in'
-            var vehicleJob = Entities.WithName("UnitDenormalizedJob")
+            BufferFromEntity<ConnectedSegmentBufferElement> nodeConnectedSegmentsBuffer = GetBufferFromEntity<ConnectedSegmentBufferElement>(true);
+            
+            var randomArray = World.GetExistingSystem<RandomSystem>().RandomArray;
+
+            Entities.WithNativeDisableParallelForRestriction(randomArray)
+                .WithNativeDisableParallelForRestriction(nodeConnectedSegmentsBuffer)
                 .ForEach((Entity entity, int entityInQueryIndex, ref Translation translation, ref Rotation rotation,
-                    in VehicleComponent vehicleComponent) =>
+                   ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, in VehicleComponent vehicleComponent) =>
                 {
                     var newTrans = translation;
                     var newRotation = rotation;
 
-                    float3 target = vehicleComponent.Target;
+                    float3 target = GetComponent<RoadNodeComponent>(vehicleSegmentInfoComponent.NextNode).Position;
                     float3 delta = target - newTrans.Value;
                     float frameSpeed = vehicleComponent.Speed * time;
 
@@ -43,6 +44,27 @@ namespace TrafficSimulation.Systems
                     {
                         newTrans.Value = target;
                         ecb.AddComponent(entityInQueryIndex, entity, new HasReachedNodeComponent());
+
+                        if(!nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode))
+                            return;
+                        
+                        DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = 
+                            nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
+                        
+                        var index = 0;
+                        if (connectedSegmentBufferElements.Length > 1)
+                        {
+                            var random = randomArray[entityInQueryIndex];
+                            index = random.NextInt(0, connectedSegmentBufferElements.Length);
+                            randomArray[entityInQueryIndex] = random;
+                        }
+                        var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
+                            
+                        vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
+                        {
+                            Segment = nextSegmentEntity,
+                            NextNode = GetComponent<SegmentComponent>(nextSegmentEntity).EndNode
+                        };
                     }
                     else
                     {
@@ -53,10 +75,14 @@ namespace TrafficSimulation.Systems
                     rotation = newRotation;
                     translation = newTrans;
 
-                }).Schedule(inputDeps);
+                }).ScheduleParallel();
             
-            endSimulationEcbSystem.AddJobHandleForProducer(vehicleJob);
-            return vehicleJob;
+            endSimulationEcbSystem.AddJobHandleForProducer(this.Dependency);
         }
+
+        private struct ChooseNextSegmentJob : JobForEachExtensions.IBaseJobForEach
+        {
+        }
+        
     }
 }
