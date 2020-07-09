@@ -6,9 +6,9 @@ using Unity.Jobs;
 
 namespace TrafficSimulation.Systems
 {
-    [UpdateAfter(typeof(VehicleMovementSystem))]
+    //[UpdateBefore(typeof(VehicleMovementSystem))]
     //[UpdateInGroup(typeof(PresentationSystemGroup))]
-    public class TrafficVehicleSegmentChooseSystem : JobComponentSystem
+    /*public class TrafficVehicleSegmentChooseSystem : JobComponentSystem
     {
         EndSimulationEntityCommandBufferSystem endSimulationEcbSystem;
         private EntityQuery group;
@@ -28,7 +28,7 @@ namespace TrafficSimulation.Systems
         [BurstCompile]
         private struct ChooseNextSegmentJob : IJobChunk
         {
-            [ReadOnly] public ArchetypeChunkComponentType<VehicleComponent> vehicleType;
+            public ArchetypeChunkComponentType<VehicleComponent> vehicleType;
             [ReadOnly] public ArchetypeChunkComponentType<HasReachedNodeComponent> hasReachedNodeType;
             public EntityCommandBuffer.Concurrent endSimulationEcbSystem { get; set; }
             
@@ -60,9 +60,9 @@ namespace TrafficSimulation.Systems
             var segmentComponentData = GetComponentDataFromEntity<SegmentComponent>();
             NativeArray<SegmentComponent> segmentComponentArray = segmentsEntityQuery.ToComponentDataArray<SegmentComponent>(Allocator.TempJob);
             
-            var vehicleType = GetArchetypeChunkComponentType<VehicleComponent>(true);
+            var vehicleType = GetArchetypeChunkComponentType<VehicleComponent>();
             var hasReachedNodeType = GetArchetypeChunkComponentType<HasReachedNodeComponent>(true);
-
+            
             var job = new ChooseNextSegmentJob()
             {
                 endSimulationEcbSystem = ecb,
@@ -79,5 +79,5 @@ namespace TrafficSimulation.Systems
 
        
        
-    }
+    }*/
 }
