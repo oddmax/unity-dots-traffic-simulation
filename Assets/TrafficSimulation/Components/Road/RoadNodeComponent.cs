@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace TrafficSimulation.Components
+namespace TrafficSimulation.Components.Road
 {
     [GenerateAuthoringComponent]
     public struct RoadNodeComponent : IComponentData

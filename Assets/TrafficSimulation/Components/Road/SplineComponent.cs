@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Model.Components
+namespace TrafficSimulation.Components.Road
 {
 	[Serializable]
 	public struct SplineComponent : IComponentData

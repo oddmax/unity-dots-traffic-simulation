@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace TrafficSimulation.Components
+namespace TrafficSimulation.Components.Vehicle
 {
     [GenerateAuthoringComponent]
     public struct VehicleComponent : IComponentData

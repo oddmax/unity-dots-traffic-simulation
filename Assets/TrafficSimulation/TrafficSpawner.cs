@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Components;
 using TrafficSimulation;
 using TrafficSimulation.Components;
 using TrafficSimulation.Components.Buffers;
+using TrafficSimulation.Components.Road;
+using TrafficSimulation.Components.Vehicle;
 using TrafficSimulation.RoadNetworkSetup;
 using Unity.Entities;
 using Unity.Mathematics;

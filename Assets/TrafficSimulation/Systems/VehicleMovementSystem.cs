@@ -1,5 +1,7 @@
 using TrafficSimulation.Components;
 using TrafficSimulation.Components.Buffers;
+using TrafficSimulation.Components.Road;
+using TrafficSimulation.Components.Vehicle;
 using Unity.Entities;
 using Unity.Mathematics;
 

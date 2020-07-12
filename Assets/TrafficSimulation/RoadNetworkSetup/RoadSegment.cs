@@ -1,4 +1,4 @@
-using Model.Components;
+using TrafficSimulation.Components.Road;
 using Unity.Mathematics;
 using UnityEngine;
 
