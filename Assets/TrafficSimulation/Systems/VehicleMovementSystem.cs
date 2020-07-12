@@ -2,7 +2,6 @@ using TrafficSimulation.Components;
 using TrafficSimulation.Components.Buffers;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
 
 namespace TrafficSimulation.Systems
 {
@@ -13,8 +12,6 @@ namespace TrafficSimulation.Systems
         protected override void OnCreate()
         {
             base.OnCreate();
-            // Find the ECB system once and store it for later usage
-            //TODO what is EntityCommandBuffer System? 
             endSimulationEcbSystem = World
                 .GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         }
@@ -30,20 +27,14 @@ namespace TrafficSimulation.Systems
 
             Entities.WithNativeDisableParallelForRestriction(randomArray)
                 .WithNativeDisableParallelForRestriction(nodeConnectedSegmentsBuffer)
-                .ForEach((Entity entity, int entityInQueryIndex, ref Translation translation, ref Rotation rotation,
-                   ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, in VehicleComponent vehicleComponent) =>
+                .ForEach((Entity entity, int entityInQueryIndex, ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, ref VehicleComponent vehicleComponent) =>
                 {
-                    var newTrans = translation;
-                    var newRotation = rotation;
-
-                    float3 target = GetComponent<RoadNodeComponent>(vehicleSegmentInfoComponent.NextNode).Position;
-                    float3 delta = target - newTrans.Value;
                     float frameSpeed = vehicleComponent.Speed * time;
-
-                    if (math.length(delta) < frameSpeed)
+                    var newVehicleComponent = vehicleComponent;
+                    var currentSegPos = newVehicleComponent.CurrentSegPos;
+                    if(currentSegPos >= vehicleSegmentInfoComponent.SegmentLength)
                     {
-                        newTrans.Value = target;
-                        ecb.AddComponent(entityInQueryIndex, entity, new HasReachedNodeComponent());
+                        //ecb.AddComponent(entityInQueryIndex, entity, new HasReachedNodeComponent());
 
                         if(!nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode))
                             return;
@@ -59,21 +50,25 @@ namespace TrafficSimulation.Systems
                             randomArray[entityInQueryIndex] = random;
                         }
                         var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
-                            
+                        var nextSegmentComponent = GetComponent<SegmentComponent>(nextSegmentEntity);
+                        currentSegPos = 0;
+
                         vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
                         {
                             Segment = nextSegmentEntity,
-                            NextNode = GetComponent<SegmentComponent>(nextSegmentEntity).EndNode
+                            SegmentLength = nextSegmentComponent.Length,
+                            NextNode = nextSegmentComponent.EndNode
                         };
                     }
                     else
                     {
-                        newTrans.Value += math.normalize(delta) * frameSpeed;
-                        newRotation.Value = quaternion.LookRotation(delta, math.up());
+                        currentSegPos += frameSpeed;
+                        if (currentSegPos >= vehicleSegmentInfoComponent.SegmentLength)
+                            currentSegPos = vehicleSegmentInfoComponent.SegmentLength;
                     }
 
-                    rotation = newRotation;
-                    translation = newTrans;
+                    newVehicleComponent.CurrentSegPos = currentSegPos;
+                    vehicleComponent = newVehicleComponent;
 
                 }).ScheduleParallel();
             
