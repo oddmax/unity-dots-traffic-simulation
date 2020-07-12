@@ -54,7 +54,15 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+*.DS_Store
 
 # Crashlytics generated file
 crashlytics-build.properties
 
+/Assets/OldExamples
+/Assets/OldExamples.meta
+/Assets/Examples
+/Assets/Examples.meta
+/Assets/JobLogger.cs
+/Assets/JobLogger.cs.meta
+/.idea
