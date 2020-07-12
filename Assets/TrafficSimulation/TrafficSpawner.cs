@@ -72,7 +72,7 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
                 var segmentEntity = segments[segmentIndex];
                 var segmentComponent = dstManager.GetComponentData<SegmentComponent>(segmentEntity);
                
-                vehicleComponent.CurrentSegPos = Random.Range(0f, 1f);
+                vehicleComponent.CurrentSegPos = Random.Range(0f, segmentComponent.Length);
                 
                 var translation = dstManager.GetComponentData<Translation>(carEntity);
                 

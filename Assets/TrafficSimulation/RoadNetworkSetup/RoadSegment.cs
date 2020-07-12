@@ -11,7 +11,7 @@ namespace TrafficSimulation.RoadNetworkSetup
         public RoadNode StartNode;
         public RoadNode EndNode;
         public float3 MovementDirection;
-        private const float SegmentLength = 2f;
+        private const float SegmentLength = 1f;
         public static readonly Vector3 OffsetZ = Vector3.up * 0.1f;
         
         [HideInInspector]
@@ -25,7 +25,16 @@ namespace TrafficSimulation.RoadNetworkSetup
                 DrawConnection(DrawMode.Line | DrawMode.Arrow);
             }
         }
-        
+
+        private void OnDrawGizmosSelected()
+        {
+            var mode = DrawMode.Selected | DrawMode.Line | DrawMode.Arrow;
+            if (StartNode != null && EndNode != null)
+            {
+                DrawConnection(mode);
+            }
+        }
+
         private void DrawConnection(DrawMode mode)
         {
             var s = SplineComponent.CreateSpline(StartNode.transform, EndNode.transform, CurveIn);
@@ -38,17 +47,12 @@ namespace TrafficSimulation.RoadNetworkSetup
             bool selected = (mode & DrawMode.Selected) != 0;
             if ((mode & DrawMode.Line) != 0)
             {
-                bool useNetColor = (mode & DrawMode.NetColor) != 0;
-                var netColor = Color.blue;
-                
                 for (int i = 0; i <= length - 1; i++)
                 {
                     bool isEven = i % 2 == 0;
                     var startPoint = (Vector3) s.Point((float) i / length);
                     var endPoint = (Vector3) s.Point((float) (i + 1) / length);
-                    var color = useNetColor
-                        ? netColor
-                        : (selected
+                    var color = (selected
                             ? (isEven ? Color.red : Color.green)
                             : Color.white);
                     if ((mode & DrawMode.Darker) != 0) color *= 0.75f;
@@ -75,7 +79,6 @@ namespace TrafficSimulation.RoadNetworkSetup
             Selected = 1 << 0,
             Line = 1 << 1,
             Arrow = 1 << 2,
-            NetColor = 1 << 3,
             Darker = 1 << 4,
         }
 #endif

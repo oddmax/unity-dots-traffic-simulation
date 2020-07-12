@@ -75,9 +75,5 @@ namespace TrafficSimulation.Systems
             endSimulationEcbSystem.AddJobHandleForProducer(this.Dependency);
         }
 
-        private struct ChooseNextSegmentJob : JobForEachExtensions.IBaseJobForEach
-        {
-        }
-        
     }
 }
