@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Components;
 using TrafficSimulation;
 using TrafficSimulation.Components;
 using TrafficSimulation.Components.Buffers;
+using TrafficSimulation.RoadNetworkSetup;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -40,20 +42,21 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
             List<Entity> segments = new List<Entity>();
             foreach (var segment in SegmentsToCreate)
             {
-                var segmentEntity = dstManager.CreateEntity(typeof(SegmentComponent));
+                var segmentEntity = dstManager.CreateEntity(typeof(SegmentComponent), typeof(SplineComponent));
+                
+                var splineComponent = SplineComponent.CreateSpline(segment.StartNode.transform, segment.EndNode.transform,
+                    segment.CurveIn);
                 
                 var segmentComponent = dstManager.GetComponentData<SegmentComponent>(segmentEntity);
                 segmentComponent.StartNode = roadNodes[segment.StartNode];
                 segmentComponent.EndNode = roadNodes[segment.EndNode];
-                segmentComponent.Length = Vector3.Distance(segment.StartNode.transform.position,
-                    segment.EndNode.transform.position);
-                segmentComponent.MovementDirection = segment.EndNode.transform.position -
-                                                     segment.StartNode.transform.position;
+                segmentComponent.Length = splineComponent.TotalLength();
 
                 var nodeBuffer = dstManager.GetBuffer<ConnectedSegmentBufferElement>(segmentComponent.StartNode);
                 nodeBuffer.Add(new ConnectedSegmentBufferElement { segment = segmentEntity });
                 
                 dstManager.SetComponentData(segmentEntity, segmentComponent);
+                dstManager.SetComponentData(segmentEntity, splineComponent);
                 
                 segments.Add(segmentEntity);
             }
@@ -77,10 +80,10 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
                 var endNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.EndNode);
                 
                 vehicleSegmentInfoComponent.Segment = segmentEntity;
+                vehicleSegmentInfoComponent.SegmentLength = segmentComponent.Length;
                 vehicleSegmentInfoComponent.NextNode = segmentComponent.EndNode;
                 
                 translation.Value = math.lerp(endNodeComponent.Position, startNodeComponent.Position, vehicleComponent.CurrentSegPos);
-                vehicleComponent.Target = endNodeComponent.Position;
                 
                 dstManager.SetComponentData(carEntity, vehicleComponent);
                 dstManager.SetComponentData(carEntity, vehicleSegmentInfoComponent);
