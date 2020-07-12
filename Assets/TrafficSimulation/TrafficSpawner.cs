@@ -43,12 +43,12 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
             List<Entity> segments = new List<Entity>();
             foreach (var segment in SegmentsToCreate)
             {
-                var segmentEntity = dstManager.CreateEntity(typeof(SegmentComponent), typeof(SplineComponent));
+                var segmentEntity = dstManager.CreateEntity(typeof(SegmentConfigComponent), typeof(SplineComponent));
                 
                 var splineComponent = SplineComponent.CreateSpline(segment.StartNode.transform, segment.EndNode.transform,
                     segment.CurveIn);
                 
-                var segmentComponent = dstManager.GetComponentData<SegmentComponent>(segmentEntity);
+                var segmentComponent = dstManager.GetComponentData<SegmentConfigComponent>(segmentEntity);
                 segmentComponent.StartNode = roadNodes[segment.StartNode];
                 segmentComponent.EndNode = roadNodes[segment.EndNode];
                 segmentComponent.Length = splineComponent.TotalLength();
@@ -71,7 +71,7 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
                 var segmentIndex = Random.Range(0, segments.Count);
                 var segmentEntity = segments[segmentIndex];
-                var segmentComponent = dstManager.GetComponentData<SegmentComponent>(segmentEntity);
+                var segmentComponent = dstManager.GetComponentData<SegmentConfigComponent>(segmentEntity);
                
                 vehicleComponent.CurrentSegPos = Random.Range(0f, segmentComponent.Length);
                 

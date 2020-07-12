@@ -339,9 +339,10 @@ GameObject:
   - component: {fileID: 1151131186532065714}
   - component: {fileID: 4421129757059176735}
   - component: {fileID: 4741488720421096676}
-  - component: {fileID: 3090844058903631596}
   - component: {fileID: 4509036311583401599}
   - component: {fileID: 2496310572289426316}
+  - component: {fileID: 4250409908515304481}
+  - component: {fileID: 74575943524992535}
   m_Layer: 0
   m_Name: CarPrefab2
   m_TagString: Untagged
@@ -421,28 +422,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3090844058903631596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8546581434592742113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb63154e6bba42b99a7f85e19bf96f2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 4
-  MovementDirection:
-    x: 0
-    y: 0
-    z: 0
-  Target:
-    x: 0
-    y: 0
-    z: 0
-  CurrentSegPos: 0
 --- !u!114 &4509036311583401599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,4 +448,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Segment: {fileID: 0}
+  SegmentLength: 0
   NextNode: {fileID: 0}
+--- !u!114 &4250409908515304481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8546581434592742113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0fd1914101f4ba7a677ab3dfd4df817, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 2
+  Length: 2
+--- !u!114 &74575943524992535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8546581434592742113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb63154e6bba42b99a7f85e19bf96f2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentSegPos: 0

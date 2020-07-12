@@ -29,9 +29,9 @@ namespace TrafficSimulation.Systems
 
             Entities.WithNativeDisableParallelForRestriction(randomArray)
                 .WithNativeDisableParallelForRestriction(nodeConnectedSegmentsBuffer)
-                .ForEach((Entity entity, int entityInQueryIndex, ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, ref VehicleComponent vehicleComponent) =>
+                .ForEach((Entity entity, int entityInQueryIndex, ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, ref VehicleComponent vehicleComponent, in VehicleConfigComponent vehicleConfigComponent) =>
                 {
-                    float frameSpeed = vehicleComponent.Speed * time;
+                    float frameSpeed = vehicleConfigComponent.Speed * time;
                     var newVehicleComponent = vehicleComponent;
                     var currentSegPos = newVehicleComponent.CurrentSegPos;
                     if(currentSegPos >= vehicleSegmentInfoComponent.SegmentLength)
@@ -52,7 +52,7 @@ namespace TrafficSimulation.Systems
                             randomArray[entityInQueryIndex] = random;
                         }
                         var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
-                        var nextSegmentComponent = GetComponent<SegmentComponent>(nextSegmentEntity);
+                        var nextSegmentComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
                         currentSegPos = 0;
 
                         vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
