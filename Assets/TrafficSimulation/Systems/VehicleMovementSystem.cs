@@ -29,7 +29,10 @@ namespace TrafficSimulation.Systems
 
             Entities.WithNativeDisableParallelForRestriction(randomArray)
                 .WithNativeDisableParallelForRestriction(nodeConnectedSegmentsBuffer)
-                .ForEach((Entity entity, int entityInQueryIndex, ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, ref VehicleComponent vehicleComponent, in VehicleConfigComponent vehicleConfigComponent) =>
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                    ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, 
+                    ref VehicleComponent vehicleComponent, 
+                    in VehicleConfigComponent vehicleConfigComponent) =>
                 {
                     float frameSpeed = vehicleConfigComponent.Speed * time;
                     var newVehicleComponent = vehicleComponent;

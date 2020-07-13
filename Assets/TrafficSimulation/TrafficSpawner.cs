@@ -58,6 +58,7 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
                 
                 dstManager.SetComponentData(segmentEntity, segmentComponent);
                 dstManager.SetComponentData(segmentEntity, splineComponent);
+                dstManager.SetComponentData(segmentEntity, new SegmentEndBlockedSpaceComponent { BlockedSegment = segmentComponent.Length});
                 
                 segments.Add(segmentEntity);
             }
