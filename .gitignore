@@ -66,3 +66,4 @@ crashlytics-build.properties
 /Assets/JobLogger.cs
 /Assets/JobLogger.cs.meta
 /.idea
+/.DS_Store
