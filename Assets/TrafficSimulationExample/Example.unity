@@ -610,6 +610,7 @@ MonoBehaviour:
   - {fileID: 1821600770}
   - {fileID: 1588162732}
   - {fileID: 1555147923}
+  - {fileID: 1452360320}
   SegmentsToCreate:
   - {fileID: 110766384}
   - {fileID: 1988612443}
@@ -625,6 +626,8 @@ MonoBehaviour:
   - {fileID: 754514786}
   - {fileID: 414090468}
   - {fileID: 1530939790}
+  - {fileID: 97161647}
+  - {fileID: 1636512210}
 --- !u!4 &56083048
 Transform:
   m_ObjectHideFlags: 0
