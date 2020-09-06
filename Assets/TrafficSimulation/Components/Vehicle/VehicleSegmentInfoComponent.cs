@@ -7,6 +7,7 @@ namespace TrafficSimulation.Components.Vehicle
     {
         public Entity Segment;
         public float SegmentLength;
+        public float SegmentAvailableLength;
         public Entity NextNode;
     }
 }

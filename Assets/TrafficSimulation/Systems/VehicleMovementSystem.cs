@@ -82,9 +82,7 @@ namespace TrafficSimulation.Systems
                                 return;
                             }
                         }
-                     
-                        SetComponent(vehicleSegmentInfoComponent.Segment, new SegmentAddBlockLengthComponent { blockedLength = vehicleConfigComponent.Length});
-                        
+                        //SetComponent(vehicleSegmentInfoComponent.Segment, new SegmentAddBlockLengthComponent { blockedLength = vehicleConfigComponent.Length});
                     }
                     else
                     {
