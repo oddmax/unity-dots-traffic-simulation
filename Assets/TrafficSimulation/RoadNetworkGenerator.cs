@@ -9,7 +9,7 @@ namespace TrafficSimulation
 {
     public class NodeGenerationInfo
     {
-        public List<RoadNode> nodesAtSamePosition;
+        public List<RoadNode> nodesAtSamePosition = new List<RoadNode>();
         public Vector3 position;
     }
     
