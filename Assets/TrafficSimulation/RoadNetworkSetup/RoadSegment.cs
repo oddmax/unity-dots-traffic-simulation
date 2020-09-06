@@ -67,7 +67,16 @@ namespace TrafficSimulation.RoadNetworkSetup
                 Gizmos.color = selected ? Color.cyan : Color.white;
                 var center = s.Point(0.5f);
                 var forward = s.Tangent(0.5f);
-                Gizmos.DrawMesh(transform.parent.GetComponent<RoadSetup>().ConeMesh, center, Quaternion.LookRotation(forward),
+
+                Mesh coneMesh = null;
+                if (transform.parent.GetComponent<RoadSetup>() != null)
+                    coneMesh = transform.parent.GetComponent<RoadSetup>().ConeMesh;
+            
+                if (transform.parent.GetComponent<RoadPiece>() != null)
+                    coneMesh = transform.parent.GetComponent<RoadPiece>().ConeMesh;
+            
+                if(coneMesh != null)
+                    Gizmos.DrawMesh(coneMesh, center, Quaternion.LookRotation(forward),
                     new Vector3(1f, 1f, 2f));
             }
         }

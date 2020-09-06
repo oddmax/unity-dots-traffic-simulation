@@ -37,33 +37,54 @@ namespace TrafficSimulation.Systems
                     float frameSpeed = vehicleConfigComponent.Speed * time;
                     var newVehicleComponent = vehicleComponent;
                     var currentSegPos = newVehicleComponent.CurrentSegPos;
-                    if(currentSegPos >= vehicleSegmentInfoComponent.SegmentLength)
+                    var segmentComponent = GetComponent<SegmentComponent>(vehicleSegmentInfoComponent.Segment);
+                    if(currentSegPos >= segmentComponent.AvailableLength)
                     {
-                        //ecb.AddComponent(entityInQueryIndex, entity, new HasReachedNodeComponent());
-
-                        if(!nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode))
+                        var valueToAddToAvailableLength = vehicleConfigComponent.Length;
+                        var segmentConfigComponent = GetComponent<SegmentConfigComponent>(vehicleSegmentInfoComponent.Segment);
+                        if (segmentComponent.AvailableLength >= segmentConfigComponent.Length)
+                        {
+                            if(!nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode))
                             return;
                         
-                        DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = 
-                            nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
-                        
-                        var index = 0;
-                        if (connectedSegmentBufferElements.Length > 1)
-                        {
-                            var random = randomArray[entityInQueryIndex];
-                            index = random.NextInt(0, connectedSegmentBufferElements.Length);
-                            randomArray[entityInQueryIndex] = random;
-                        }
-                        var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
-                        var nextSegmentComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
-                        currentSegPos = 0;
+                            DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = 
+                                nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
+                            
+                            if (connectedSegmentBufferElements.Length > 1)
+                            {
+                                var random = randomArray[entityInQueryIndex];
+                                var index = random.NextInt(0, connectedSegmentBufferElements.Length);
+                                randomArray[entityInQueryIndex] = random;
 
-                        vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
-                        {
-                            Segment = nextSegmentEntity,
-                            SegmentLength = nextSegmentComponent.Length,
-                            NextNode = nextSegmentComponent.EndNode
-                        };
+                                var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
+                                var nextSegmentConfigComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
+                                var nextSegmentComponent = GetComponent<SegmentComponent>(nextSegmentEntity);
+
+                                if (nextSegmentComponent.TrafficType == ConnectionTrafficType.NoEntrance)
+                                {
+                                    //valueToAddToAvailableLength == 0;
+                                }
+                                else
+                                {
+                                    currentSegPos = 0;
+
+                                    vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
+                                    {
+                                        Segment = nextSegmentEntity,
+                                        SegmentLength = nextSegmentConfigComponent.Length,
+                                        NextNode = nextSegmentConfigComponent.EndNode
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                ecb.DestroyEntity(entityInQueryIndex, entity);
+                                return;
+                            }
+                        }
+                     
+                        SetComponent(vehicleSegmentInfoComponent.Segment, new SegmentAddBlockLengthComponent { blockedLength = vehicleConfigComponent.Length});
+                        
                     }
                     else
                     {
