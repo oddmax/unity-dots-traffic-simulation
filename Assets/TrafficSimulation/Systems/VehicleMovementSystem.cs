@@ -27,74 +27,89 @@ namespace TrafficSimulation.Systems
             
             var randomArray = World.GetExistingSystem<RandomSystem>().RandomArray;
 
-            Entities.WithNativeDisableParallelForRestriction(randomArray)
-                .WithNativeDisableParallelForRestriction(nodeConnectedSegmentsBuffer)
-                .ForEach((Entity entity, int entityInQueryIndex, 
-                    ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, 
-                    ref VehicleComponent vehicleComponent, 
+            Entities.ForEach((Entity entity, int entityInQueryIndex,
+                    ref VehicleComponent vehicleComponent,
+                    in VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
                     in VehicleConfigComponent vehicleConfigComponent) =>
                 {
                     float frameSpeed = vehicleConfigComponent.Speed * time;
                     var newVehicleComponent = vehicleComponent;
                     var currentSegPos = newVehicleComponent.CurrentSegPos;
+                    
                     var segmentComponent = GetComponent<SegmentComponent>(vehicleSegmentInfoComponent.Segment);
-                    if(currentSegPos >= segmentComponent.AvailableLength)
+                    currentSegPos = math.min(newVehicleComponent.CurrentSegPos + frameSpeed, segmentComponent.AvailableLength);
+
+                    newVehicleComponent.CurrentSegPos = currentSegPos;
+                    vehicleComponent = newVehicleComponent;
+                }).ScheduleParallel();
+            
+
+            Entities.WithNativeDisableParallelForRestriction(randomArray)
+                //.WithNativeDisableParallelForRestriction(nodeConnectedSegmentsBuffer)
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                    ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent, 
+                    ref VehicleComponent vehicleComponent, 
+                    in VehicleConfigComponent vehicleConfigComponent) =>
+                {
+                    var segment = vehicleSegmentInfoComponent.Segment;
+                    var segmentComponent = GetComponent<SegmentComponent>(segment);
+                    var segmentComponentAvailableLength = segmentComponent.AvailableLength;
+                    if(vehicleComponent.CurrentSegPos >= segmentComponentAvailableLength)
                     {
-                        var valueToAddToAvailableLength = vehicleConfigComponent.Length;
-                        var segmentConfigComponent = GetComponent<SegmentConfigComponent>(vehicleSegmentInfoComponent.Segment);
-                        if (segmentComponent.AvailableLength >= segmentConfigComponent.Length)
+                        var valueToAddToAvailableLength = 0f;
+                        var segmentConfigComponent = GetComponent<SegmentConfigComponent>(segment);
+                        if (vehicleComponent.CurrentSegPos >= segmentConfigComponent.Length)
                         {
-                            if(!nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode))
-                            return;
-                        
-                            DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = 
-                                nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
-                            
-                            if (connectedSegmentBufferElements.Length > 1)
+                            var isNextNodeExist = nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode);
+                            if (isNextNodeExist)
                             {
-                                var random = randomArray[entityInQueryIndex];
-                                var index = random.NextInt(0, connectedSegmentBufferElements.Length);
-                                randomArray[entityInQueryIndex] = random;
-
-                                var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
-                                var nextSegmentConfigComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
-                                var nextSegmentComponent = GetComponent<SegmentComponent>(nextSegmentEntity);
-
-                                if (nextSegmentComponent.TrafficType == ConnectionTrafficType.NoEntrance)
+                                DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = 
+                                    nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
+                            
+                                if (connectedSegmentBufferElements.Length > 0)
                                 {
-                                    //valueToAddToAvailableLength == 0;
-                                }
-                                else
-                                {
-                                    currentSegPos = 0;
+                                    var random = randomArray[entityInQueryIndex];
+                                    var index = random.NextInt(0, connectedSegmentBufferElements.Length);
+                                    randomArray[entityInQueryIndex] = random;
 
-                                    vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
+                                    var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
+                                    var nextSegmentConfigComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
+                                    var nextSegmentComponent = GetComponent<SegmentComponent>(nextSegmentEntity);
+
+                                    if (nextSegmentComponent.TrafficType == ConnectionTrafficType.NoEntrance)
                                     {
-                                        Segment = nextSegmentEntity,
-                                        SegmentLength = nextSegmentConfigComponent.Length,
-                                        NextNode = nextSegmentConfigComponent.EndNode
-                                    };
-                                }
+                                        valueToAddToAvailableLength = -vehicleConfigComponent.Length;
+                                    }
+                                    else
+                                    {
+                                        vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
+                                        {
+                                            Segment = nextSegmentEntity,
+                                            SegmentLength = nextSegmentConfigComponent.Length,
+                                            NextNode = nextSegmentConfigComponent.EndNode
+                                        };
+                                        valueToAddToAvailableLength = vehicleConfigComponent.Length;
+                                        vehicleComponent = new VehicleComponent
+                                        {
+                                            CurrentSegPos = 0
+                                        };
+                                    }
+
+                                    isNextNodeExist = true;
+                                }  
                             }
+                            
                             else
                             {
                                 ecb.DestroyEntity(entityInQueryIndex, entity);
                                 return;
                             }
-                        }
-                        //SetComponent(vehicleSegmentInfoComponent.Segment, new SegmentAddBlockLengthComponent { blockedLength = vehicleConfigComponent.Length});
-                    }
-                    else
-                    {
-                        currentSegPos += frameSpeed;
-                        if (currentSegPos >= vehicleSegmentInfoComponent.SegmentLength)
-                            currentSegPos = vehicleSegmentInfoComponent.SegmentLength;
+                        } 
+                        SetComponent(segment, new SegmentComponent { AvailableLength = segmentComponentAvailableLength + valueToAddToAvailableLength});
+                       // SetComponent(vehicleSegmentInfoComponent.Segment, new SegmentAddBlockLengthComponent { blockedLength = vehicleConfigComponent.Length});
                     }
 
-                    newVehicleComponent.CurrentSegPos = currentSegPos;
-                    vehicleComponent = newVehicleComponent;
-
-                }).ScheduleParallel();
+                }).Schedule();
             
             endSimulationEcbSystem.AddJobHandleForProducer(this.Dependency);
         }

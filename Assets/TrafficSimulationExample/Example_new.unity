@@ -653,7 +653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ddfbec2ef3849679eb6c211eeae906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CarToSpawn: 100
+  CarToSpawn: 1
   CarPrefab: {fileID: 8546581434592742113, guid: ab59828010b844441865513a233d6d1c, type: 3}
   RoadPieces:
   - {fileID: 422460202}
