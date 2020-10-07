@@ -5,6 +5,9 @@ namespace TrafficSimulation.Components.Vehicle
     [GenerateAuthoringComponent]
     public struct VehicleComponent : IComponentData
     {
-        public float CurrentSegPos;
+        public float HeadSegPos;
+        public float BackSegPos;
+        public Entity FrontSegment;
+        public Entity BackSegment;
     }
 }

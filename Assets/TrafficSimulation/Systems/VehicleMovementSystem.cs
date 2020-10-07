@@ -34,12 +34,12 @@ namespace TrafficSimulation.Systems
                 {
                     float frameSpeed = vehicleConfigComponent.Speed * time;
                     var newVehicleComponent = vehicleComponent;
-                    var currentSegPos = newVehicleComponent.CurrentSegPos;
+                    var currentSegPos = newVehicleComponent.HeadSegPos;
                     
-                    var segmentComponent = GetComponent<SegmentComponent>(vehicleSegmentInfoComponent.Segment);
-                    currentSegPos = math.min(newVehicleComponent.CurrentSegPos + frameSpeed, segmentComponent.AvailableLength);
+                    var segmentComponent = GetComponent<SegmentComponent>(vehicleSegmentInfoComponent.HeadSegment);
+                    currentSegPos = math.min(newVehicleComponent.HeadSegPos + frameSpeed, segmentComponent.AvailableLength);
 
-                    newVehicleComponent.CurrentSegPos = currentSegPos;
+                    newVehicleComponent.HeadSegPos = currentSegPos;
                     vehicleComponent = newVehicleComponent;
                 }).ScheduleParallel();
             
@@ -51,14 +51,14 @@ namespace TrafficSimulation.Systems
                     ref VehicleComponent vehicleComponent, 
                     in VehicleConfigComponent vehicleConfigComponent) =>
                 {
-                    var segment = vehicleSegmentInfoComponent.Segment;
+                    var segment = vehicleSegmentInfoComponent.HeadSegment;
                     var segmentComponent = GetComponent<SegmentComponent>(segment);
                     var segmentComponentAvailableLength = segmentComponent.AvailableLength;
-                    if(vehicleComponent.CurrentSegPos >= segmentComponentAvailableLength)
+                    if(vehicleComponent.HeadSegPos >= segmentComponentAvailableLength)
                     {
                         var valueToAddToAvailableLength = 0f;
                         var segmentConfigComponent = GetComponent<SegmentConfigComponent>(segment);
-                        if (vehicleComponent.CurrentSegPos >= segmentConfigComponent.Length)
+                        if (vehicleComponent.HeadSegPos >= segmentConfigComponent.Length)
                         {
                             var isNextNodeExist = nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode);
                             if (isNextNodeExist)
@@ -84,14 +84,14 @@ namespace TrafficSimulation.Systems
                                     {
                                         vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
                                         {
-                                            Segment = nextSegmentEntity,
+                                            HeadSegment = nextSegmentEntity,
                                             SegmentLength = nextSegmentConfigComponent.Length,
                                             NextNode = nextSegmentConfigComponent.EndNode
                                         };
                                         valueToAddToAvailableLength = vehicleConfigComponent.Length;
                                         vehicleComponent = new VehicleComponent
                                         {
-                                            CurrentSegPos = 0
+                                            HeadSegPos = 0
                                         };
                                     }
 

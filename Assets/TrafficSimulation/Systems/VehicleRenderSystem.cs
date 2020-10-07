@@ -4,6 +4,7 @@ using TrafficSimulation.Components.Vehicle;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace TrafficSimulation.Systems
 {
@@ -16,17 +17,19 @@ namespace TrafficSimulation.Systems
                     in VehicleSegmentInfoComponent vehicleSegmentInfoComponent, in VehicleComponent vehicleComponent) =>
                 {
                     var oldTranslation = translation;
-                    var spline = GetComponent<SplineComponent>(vehicleSegmentInfoComponent.Segment);
+                    var spline = GetComponent<SplineComponent>(vehicleSegmentInfoComponent.HeadSegment);
                     var length = spline.Length;
-                    
-                    var newTrans = new Translation
-                        {Value = spline.Point(vehicleComponent.CurrentSegPos / length)};
 
+                    var newTrans = new Translation {Value = spline.Point(vehicleComponent.HeadSegPos / length)};
+
+                    var translationChange = oldTranslation.Value - newTrans.Value;
                     var newRotation = new Rotation
-                        {Value = quaternion.LookRotation(oldTranslation.Value - newTrans.Value, math.up())};
+                        {Value = quaternion.LookRotation(translationChange, math.up())};
                     
-                    rotation = newRotation;
                     translation = newTrans;
+                    if(!translationChange.Equals(float3.zero))
+                        rotation = newRotation;
+                    
                 }).ScheduleParallel();
         }
     }
