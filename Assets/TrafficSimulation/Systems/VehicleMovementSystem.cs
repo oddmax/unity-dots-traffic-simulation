@@ -69,9 +69,9 @@ namespace TrafficSimulation.Systems
                         
                         // choose segment to go after the new one
                         newSegmentChangeIntention.NextSegment = Entity.Null;
-                        if (nodeConnectedSegmentsBuffer.Exists(newVehicleSegmentInfoComponent.NextNode))
+                        if (nodeConnectedSegmentsBuffer.Exists(newSegmentConfig.EndNode))
                         {
-                            DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
+                            DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = nodeConnectedSegmentsBuffer[newSegmentConfig.EndNode];
                             if (connectedSegmentBufferElements.Length > 0)
                             {
                                 var random = randomArray[entityInQueryIndex];
@@ -164,7 +164,7 @@ namespace TrafficSimulation.Systems
                         
                         if (distanceTillNode < MAX_DISTANCE && vehicleSegmentChangeIntention.NextSegment != Entity.Null)
                         {
-                            var nextSegmentComponent = GetComponent<SegmentComponent>(segment);
+                            var nextSegmentComponent = GetComponent<SegmentComponent>(vehicleSegmentChangeIntention.NextSegment);
                             if (nextSegmentComponent.TrafficType == ConnectionTrafficType.Normal)
                                 distance += nextSegmentComponent.AvailableLength;
                         }

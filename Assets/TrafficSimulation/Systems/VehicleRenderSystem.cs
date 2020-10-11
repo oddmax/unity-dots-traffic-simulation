@@ -19,10 +19,20 @@ namespace TrafficSimulation.Systems
                     in VehicleConfigComponent vehicleConfigComponent) =>
                 {
                     var oldTranslation = translation;
-                    var spline = GetComponent<SplineComponent>(vehicleSegmentInfoComponent.HeadSegment);
+                    var centerVehiclePos = vehicleComponent.HeadSegPos - vehicleConfigComponent.Length / 2;
+                    var centerSegment = centerVehiclePos >= 0f
+                        ? vehicleSegmentInfoComponent.HeadSegment
+                        : vehicleSegmentInfoComponent.PreviousSegment;
+
+                    if (centerVehiclePos < 0)
+                    {
+                        centerVehiclePos += vehicleSegmentInfoComponent.PreviousSegmentLength;
+                    }
+                    
+                    var spline = GetComponent<SplineComponent>(centerSegment);
                     var length = spline.Length;
 
-                    var newTrans = new Translation {Value = spline.Point((vehicleComponent.HeadSegPos - vehicleConfigComponent.Length/2) / length)};
+                    var newTrans = new Translation {Value = spline.Point(centerVehiclePos / length)};
 
                     var translationChange = oldTranslation.Value - newTrans.Value;
                     var newRotation = new Rotation
