@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 3517280496935556151}
   - component: {fileID: -8183715153246599309}
   - component: {fileID: 5292173198427172811}
+  - component: {fileID: 5037950092085941103}
+  - component: {fileID: 2381821859697559862}
   m_Layer: 0
   m_Name: CarPrefab
   m_TagString: Untagged
@@ -95,19 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb63154e6bba42b99a7f85e19bf96f2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 0
-  SegmentId: 0
-  Segment: {fileID: 0}
-  Speed: 4
-  MovementDirection:
-    x: 0
-    y: 0
-    z: 0
-  Target:
-    x: 0
-    y: 0
-    z: 0
-  CurrentSegPos: 0
+  HeadSegPos: 0
+  BackSegPos: 0
+  FrontSegment: {fileID: 0}
+  BackSegment: {fileID: 0}
 --- !u!114 &5292173198427172811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,3 +114,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversionMode: 0
+--- !u!114 &5037950092085941103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3156776542280840674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0fd1914101f4ba7a677ab3dfd4df817, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 0
+  Length: 0
+--- !u!114 &2381821859697559862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3156776542280840674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03039aa24d64c179475e86393095870, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HeadSegment: {fileID: 0}
+  BackSegment: {fileID: 0}
+  VehicleInFront: {fileID: 0}
+  SegmentLength: 0
+  SegmentAvailableLength: 0
+  NextNode: {fileID: 0}
+  VehicleInFrontBackPosition: 0

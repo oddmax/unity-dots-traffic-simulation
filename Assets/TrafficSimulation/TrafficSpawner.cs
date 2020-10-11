@@ -42,6 +42,7 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
             var vehicleComponent = dstManager.GetComponentData<VehiclePositionComponent>(carEntity);
             var vehicleSegmentInfoComponent = dstManager.GetComponentData<VehicleSegmentInfoComponent>(carEntity);
+            var vehicleMoveIntentionComponent = dstManager.GetComponentData<VehicleSegmentChangeIntention>(carEntity);
 
             var segmentIndex = Random.Range(0, roadSegments.Count);
             var segmentEntity = roadSegments[segmentIndex];
@@ -50,22 +51,22 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
             vehicleComponent.HeadSegPos = segmentComponent.Length;
             vehicleComponent.BackSegPos = vehicleComponent.HeadSegPos - 0.2f;
 
-            var translation = dstManager.GetComponentData<Translation>(carEntity);
-
-            var startNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.StartNode);
-            var endNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.EndNode);
-
             vehicleSegmentInfoComponent.HeadSegment = segmentEntity;
             vehicleSegmentInfoComponent.BackSegment = segmentEntity;
             vehicleSegmentInfoComponent.SegmentLength = segmentComponent.Length;
-
-            //var splineComponent = dstManager.GetComponentData<SplineComponent>(segmentEntity);
-
-            //translation.Value = splineComponent.Point(vehicleComponent.HeadSegPos/segmentComponent.Length);
-
+            vehicleSegmentInfoComponent.NextNode = segmentComponent.EndNode;
+            
+            var nodeBuffer = dstManager.GetBuffer<ConnectedSegmentBufferElement>(segmentComponent.EndNode);
+            if (nodeBuffer.Length > 0)
+            {
+                var randomNextSegment = Random.Range(0, nodeBuffer.Length);
+                vehicleMoveIntentionComponent.NextFrontSegment = nodeBuffer[randomNextSegment].segment;
+                vehicleMoveIntentionComponent.NextBackSegment = nodeBuffer[randomNextSegment].segment;
+            }
+            
             dstManager.SetComponentData(carEntity, vehicleComponent);
             dstManager.SetComponentData(carEntity, vehicleSegmentInfoComponent);
-            //dstManager.SetComponentData(carEntity, translation);
+            dstManager.SetComponentData(carEntity, vehicleMoveIntentionComponent);
         }
     }
 

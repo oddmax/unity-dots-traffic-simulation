@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 5945606791982316822}
   - component: {fileID: 7139287407005414915}
   - component: {fileID: 8790170596107652721}
+  - component: {fileID: 4358486905996991649}
+  - component: {fileID: -8250287014861700129}
+  - component: {fileID: 7600407797150406483}
   m_Layer: 0
   m_Name: CarPrefab3
   m_TagString: Untagged
@@ -62,11 +65,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HeadSegment: {fileID: 0}
   BackSegment: {fileID: 0}
-  VehicleInFront: {fileID: 0}
   SegmentLength: 0
-  SegmentAvailableLength: 0
   NextNode: {fileID: 0}
-  VehicleInFrontBackPosition: 0
 --- !u!114 &7139287407005414915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,8 +95,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HeadSegPos: 0
   BackSegPos: 0
-  FrontSegment: {fileID: 0}
-  BackSegment: {fileID: 0}
+--- !u!114 &4358486905996991649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510342568207831728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2551875f0c6547539adbbc11f276048b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AvailableDistance: 0
+--- !u!114 &-8250287014861700129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510342568207831728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd8961ce1aa4daebf286d2e2e885814, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Value: 0
+--- !u!114 &7600407797150406483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510342568207831728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb836cd9814141098e8ff3e595fe7ca4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NextFrontSegment: {fileID: 0}
+  NextBackSegment: {fileID: 0}
 --- !u!1001 &7340541760430460131
 PrefabInstance:
   m_ObjectHideFlags: 0
