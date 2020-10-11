@@ -8,13 +8,13 @@ namespace TrafficSimulation.Systems
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, int entityInQueryIndex,
+            /*Entities.ForEach((Entity entity, int entityInQueryIndex,
                 ref SegmentComponent segmentComponent,
                 in SegmentAddBlockLengthComponent segmentAddBlockLengthComponent,
                 in SegmentConfigComponent segmentConfigComponent) =>
             {
                 segmentComponent.AvailableLength += segmentAddBlockLengthComponent.blockedLength;
-            }).Schedule();
+            }).Schedule();*/
         }
     }
 }

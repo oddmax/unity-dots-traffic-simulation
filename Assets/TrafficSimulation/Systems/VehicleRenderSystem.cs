@@ -14,7 +14,7 @@ namespace TrafficSimulation.Systems
         {
             Entities
                 .ForEach((Entity entity, int entityInQueryIndex, ref Translation translation, ref Rotation rotation,
-                    in VehicleSegmentInfoComponent vehicleSegmentInfoComponent, in VehicleComponent vehicleComponent) =>
+                    in VehicleSegmentInfoComponent vehicleSegmentInfoComponent, in VehiclePositionComponent vehicleComponent) =>
                 {
                     var oldTranslation = translation;
                     var spline = GetComponent<SplineComponent>(vehicleSegmentInfoComponent.HeadSegment);

@@ -11,37 +11,37 @@ namespace TrafficSimulation.Systems
         public float BackSegPosition;
     }
     
-    
     public class CalculateCarsInSegmentsSystem : SystemBase
     {
-        public static NativeMultiHashMap<Entity, VehicleSegmentData> MultiHashMap;
+        public static NativeMultiHashMap<Entity, VehicleSegmentData> VehiclesSegmentsHashMap;
         
         protected override void OnCreate() {
-            MultiHashMap = new NativeMultiHashMap<Entity, VehicleSegmentData>(0, Allocator.Persistent);
+            VehiclesSegmentsHashMap = new NativeMultiHashMap<Entity, VehicleSegmentData>(0, Allocator.Persistent);
             base.OnCreate();
         }
 
         protected override void OnDestroy() {
-            MultiHashMap.Dispose();
+            VehiclesSegmentsHashMap.Dispose();
             base.OnDestroy();
         }
         
         protected override void OnUpdate()
         {
-            MultiHashMap.Clear();
-            EntityQuery entityQuery = GetEntityQuery(typeof(VehicleComponent));
-            if (entityQuery.CalculateEntityCount() > MultiHashMap.Capacity) {
-                MultiHashMap.Capacity = entityQuery.CalculateEntityCount();
+            VehiclesSegmentsHashMap.Clear();
+            EntityQuery entityQuery = GetEntityQuery(typeof(VehiclePositionComponent));
+            if (entityQuery.CalculateEntityCount() > VehiclesSegmentsHashMap.Capacity) {
+                VehiclesSegmentsHashMap.Capacity = entityQuery.CalculateEntityCount();
             }
             
-            NativeMultiHashMap<Entity, VehicleSegmentData>.ParallelWriter multiHashMap = MultiHashMap.AsParallelWriter();
+            NativeMultiHashMap<Entity, VehicleSegmentData>.ParallelWriter multiHashMap = VehiclesSegmentsHashMap.AsParallelWriter();
             Entities.ForEach((Entity entity, int entityInQueryIndex,
-                in VehicleComponent vehicleComponent) =>
+                in VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
+                in VehiclePositionComponent vehiclePositionComponent) =>
             {
-                multiHashMap.Add(vehicleComponent.BackSegment, new VehicleSegmentData
+                multiHashMap.Add(vehicleSegmentInfoComponent.BackSegment, new VehicleSegmentData
                 {
                     Entity = entity,
-                    BackSegPosition = vehicleComponent.BackSegPos
+                    BackSegPosition = vehiclePositionComponent.BackSegPos
                 });
             }).Run();
         }

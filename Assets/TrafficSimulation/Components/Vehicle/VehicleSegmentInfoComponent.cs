@@ -7,10 +7,8 @@ namespace TrafficSimulation.Components.Vehicle
     {
         public Entity HeadSegment;
         public Entity BackSegment;
-        public Entity VehicleInFront;
         public float SegmentLength;
         public float SegmentAvailableLength;
         public Entity NextNode;
-        public float VehicleInFrontBackPosition;
     }
 }
