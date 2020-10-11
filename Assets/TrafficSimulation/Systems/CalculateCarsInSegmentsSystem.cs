@@ -38,7 +38,10 @@ namespace TrafficSimulation.Systems
                 in VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
                 in VehiclePositionComponent vehiclePositionComponent) =>
             {
-                multiHashMap.Add(vehicleSegmentInfoComponent.BackSegment, new VehicleSegmentData
+                Entity segmentEntity = vehicleSegmentInfoComponent.IsBackInPreviousSegment
+                    ? vehicleSegmentInfoComponent.PreviousSegment
+                    : vehicleSegmentInfoComponent.HeadSegment;
+                multiHashMap.Add(segmentEntity, new VehicleSegmentData
                 {
                     Entity = entity,
                     BackSegPosition = vehiclePositionComponent.BackSegPos

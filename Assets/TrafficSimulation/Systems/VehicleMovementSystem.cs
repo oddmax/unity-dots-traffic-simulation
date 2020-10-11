@@ -39,7 +39,8 @@ namespace TrafficSimulation.Systems
                     ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
                     ref VehicleSegmentChangeIntention segmentChangeIntention,
                     in VehicleVelocityComponent velocityComponent,
-                    in VehicleMoveIntention moveIntention) =>
+                    in VehicleMoveIntention moveIntention,
+                    in VehicleConfigComponent vehicleConfigComponent) =>
                 {
                     if(moveIntention.AvailableDistance == 0)
                         return;
@@ -50,18 +51,25 @@ namespace TrafficSimulation.Systems
                     var newVehicleSegmentInfoComponent = vehicleSegmentInfoComponent;
 
                     newHeadSegPos = math.min(vehicleComponent.HeadSegPos + frameSpeed, vehicleComponent.HeadSegPos + moveIntention.AvailableDistance);
-                    var changeDist = newHeadSegPos - vehicleComponent.HeadSegPos;
-                    var newBackSegPos = vehicleComponent.BackSegPos + changeDist;
-
-                    if (newHeadSegPos > vehicleSegmentInfoComponent.SegmentLength)
+                    
+                    if (newHeadSegPos >= vehicleSegmentInfoComponent.SegmentLength)
                     {
                         // choosing next random segment after the current one
-                        newHeadSegPos = newHeadSegPos - vehicleSegmentInfoComponent.SegmentLength;
-                        newVehicleSegmentInfoComponent.HeadSegment = segmentChangeIntention.NextFrontSegment;
                         var newSegmentChangeIntention = segmentChangeIntention;
-                        newSegmentChangeIntention.NextFrontSegment = Entity.Null;
-                        var segmentConfig = GetComponent<SegmentConfigComponent>(newVehicleSegmentInfoComponent.HeadSegment);
-                        if (nodeConnectedSegmentsBuffer.Exists(segmentConfig.EndNode))
+                        var newSegmentConfig = GetComponent<SegmentConfigComponent>(segmentChangeIntention.NextSegment);
+                        
+                        // set new segment information
+                        newVehicleSegmentInfoComponent.HeadSegment = segmentChangeIntention.NextSegment;
+                        newVehicleSegmentInfoComponent.NextNode = newSegmentConfig.EndNode;
+                        newVehicleSegmentInfoComponent.SegmentLength = newSegmentConfig.Length;
+                        newVehicleSegmentInfoComponent.PreviousSegment = vehicleSegmentInfoComponent.HeadSegment;
+                        newVehicleSegmentInfoComponent.PreviousSegmentLength = vehicleSegmentInfoComponent.SegmentLength;
+                        newVehicleSegmentInfoComponent.IsBackInPreviousSegment = true;
+                        newHeadSegPos = newHeadSegPos - vehicleSegmentInfoComponent.SegmentLength;
+                        
+                        // choose segment to go after the new one
+                        newSegmentChangeIntention.NextSegment = Entity.Null;
+                        if (nodeConnectedSegmentsBuffer.Exists(newVehicleSegmentInfoComponent.NextNode))
                         {
                             DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
                             if (connectedSegmentBufferElements.Length > 0)
@@ -71,20 +79,24 @@ namespace TrafficSimulation.Systems
                                 randomArray[entityInQueryIndex] = random;
 
                                 var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
-                                var nextSegmentConfigComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
-                                newVehicleSegmentInfoComponent.NextNode = nextSegmentConfigComponent.EndNode;
-                                newVehicleSegmentInfoComponent.SegmentLength = nextSegmentConfigComponent.Length;
-                                newSegmentChangeIntention.NextFrontSegment = nextSegmentEntity;
+                                newSegmentChangeIntention.NextSegment = nextSegmentEntity;
                             }  
                         }
                         segmentChangeIntention = newSegmentChangeIntention;
                     }
 
-                    if (newBackSegPos > vehicleSegmentInfoComponent.SegmentLength)
+                    float newBackSegPos = newHeadSegPos - vehicleConfigComponent.Length;
+                    if (newVehicleSegmentInfoComponent.IsBackInPreviousSegment)
                     {
-                        newBackSegPos = newBackSegPos - vehicleSegmentInfoComponent.SegmentLength;
-                        newVehicleSegmentInfoComponent.BackSegment = segmentChangeIntention.NextBackSegment;
-                        segmentChangeIntention.NextBackSegment = segmentChangeIntention.NextFrontSegment;
+                        if (newBackSegPos >= 0)
+                        {
+                            newVehicleSegmentInfoComponent.IsBackInPreviousSegment = false;
+                            newVehicleSegmentInfoComponent.PreviousSegment = Entity.Null;
+                        }
+                        else
+                        {
+                            newBackSegPos += vehicleSegmentInfoComponent.PreviousSegmentLength;
+                        }
                     }
 
                     // update position values
@@ -113,7 +125,7 @@ namespace TrafficSimulation.Systems
                     var hashMapKey = new VehiclesInSegmentHashMapHelper();
                     // Calculate distance which is available in front of the vehicle
                     hashMapKey.FindVehicleInFrontInSegment(vehiclesSegmentsHashMap, entity, 0, ref nextVehicleInSegment, ref nextVehicleInSegmentPosition);
-                    newSegmentComponent.AvailableLength = nextVehicleInSegment != Entity.Null ? segmentConfigComponent.Length : nextVehicleInSegmentPosition;
+                    newSegmentComponent.AvailableLength = nextVehicleInSegment == Entity.Null ? segmentConfigComponent.Length : nextVehicleInSegmentPosition;
 
                     segmentComponent = newSegmentComponent;
                 }).Schedule();
@@ -150,7 +162,7 @@ namespace TrafficSimulation.Systems
                         var distanceTillNode = vehicleSegmentInfoComponent.SegmentLength - headSegPos;
                         distance = distanceTillNode;
                         
-                        if (distanceTillNode < MAX_DISTANCE && vehicleSegmentChangeIntention.NextFrontSegment != Entity.Null)
+                        if (distanceTillNode < MAX_DISTANCE && vehicleSegmentChangeIntention.NextSegment != Entity.Null)
                         {
                             var nextSegmentComponent = GetComponent<SegmentComponent>(segment);
                             if (nextSegmentComponent.TrafficType == ConnectionTrafficType.Normal)
@@ -168,12 +180,18 @@ namespace TrafficSimulation.Systems
 
         public static float CalculateVelocityBasedOnDistance(float currentVelocity, float maxSpeed, float distance)
         {
-            float velocity = 0;
+            float velocity = currentVelocity;
             if (distance > MAX_DISTANCE) 
                 velocity += ACCELERATION;
             else if (MIN_DISTANCE < distance && distance <= MAX_DISTANCE)
                 velocity -= ACCELERATION;
             else if (distance <= MIN_DISTANCE)
+                velocity = 0f;
+
+            if (velocity > maxSpeed)
+                velocity = maxSpeed;
+
+            if (velocity < 0f)
                 velocity = 0f;
             
             return velocity;

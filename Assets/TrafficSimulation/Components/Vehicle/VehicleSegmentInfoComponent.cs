@@ -6,8 +6,12 @@ namespace TrafficSimulation.Components.Vehicle
     public struct VehicleSegmentInfoComponent : IComponentData
     {
         public Entity HeadSegment;
-        public Entity BackSegment;
         public float SegmentLength;
+        
+        public bool IsBackInPreviousSegment;
+        public Entity PreviousSegment;
+        public float PreviousSegmentLength;
+        
         public Entity NextNode;
     }
 }
