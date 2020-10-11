@@ -3,7 +3,7 @@ using Unity.Entities;
 
 namespace TrafficSimulation.Systems
 {
-    public struct CarsInSegmentsFindHelper
+    public struct VehiclesInSegmentHashMapHelper
     {
         public void FindVehicleInFrontInSegment(
             NativeMultiHashMap<Entity, VehicleSegmentData> vehicleSegmentMap,

@@ -32,13 +32,18 @@ namespace TrafficSimulation.Systems
             var randomArray = World.GetExistingSystem<RandomSystem>().RandomArray;
             
             //move job - updates positions of the vehicle
-            Entities.ForEach((Entity entity, int entityInQueryIndex,
+            Entities
+                .WithReadOnly(nodeConnectedSegmentsBuffer)
+                .ForEach((Entity entity, int entityInQueryIndex,
                     ref VehiclePositionComponent vehicleComponent,
                     ref VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
-                    in VehicleSegmentChangeIntention segmentChangeIntention,
+                    ref VehicleSegmentChangeIntention segmentChangeIntention,
                     in VehicleVelocityComponent velocityComponent,
                     in VehicleMoveIntention moveIntention) =>
                 {
+                    if(moveIntention.AvailableDistance == 0)
+                        return;
+                    
                     float frameSpeed = velocityComponent.Value * time;
                     var newHeadSegPos = vehicleComponent.HeadSegPos;
                     var newVehicleComponent = vehicleComponent;
@@ -50,14 +55,36 @@ namespace TrafficSimulation.Systems
 
                     if (newHeadSegPos > vehicleSegmentInfoComponent.SegmentLength)
                     {
+                        // choosing next random segment after the current one
                         newHeadSegPos = newHeadSegPos - vehicleSegmentInfoComponent.SegmentLength;
                         newVehicleSegmentInfoComponent.HeadSegment = segmentChangeIntention.NextFrontSegment;
+                        var newSegmentChangeIntention = segmentChangeIntention;
+                        newSegmentChangeIntention.NextFrontSegment = Entity.Null;
+                        var segmentConfig = GetComponent<SegmentConfigComponent>(newVehicleSegmentInfoComponent.HeadSegment);
+                        if (nodeConnectedSegmentsBuffer.Exists(segmentConfig.EndNode))
+                        {
+                            DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
+                            if (connectedSegmentBufferElements.Length > 0)
+                            {
+                                var random = randomArray[entityInQueryIndex];
+                                var index = random.NextInt(0, connectedSegmentBufferElements.Length);
+                                randomArray[entityInQueryIndex] = random;
+
+                                var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
+                                var nextSegmentConfigComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
+                                newVehicleSegmentInfoComponent.NextNode = nextSegmentConfigComponent.EndNode;
+                                newVehicleSegmentInfoComponent.SegmentLength = nextSegmentConfigComponent.Length;
+                                newSegmentChangeIntention.NextFrontSegment = nextSegmentEntity;
+                            }  
+                        }
+                        segmentChangeIntention = newSegmentChangeIntention;
                     }
 
                     if (newBackSegPos > vehicleSegmentInfoComponent.SegmentLength)
                     {
                         newBackSegPos = newBackSegPos - vehicleSegmentInfoComponent.SegmentLength;
                         newVehicleSegmentInfoComponent.BackSegment = segmentChangeIntention.NextBackSegment;
+                        segmentChangeIntention.NextBackSegment = segmentChangeIntention.NextFrontSegment;
                     }
 
                     // update position values
@@ -68,11 +95,29 @@ namespace TrafficSimulation.Systems
                     vehicleSegmentInfoComponent = newVehicleSegmentInfoComponent;
                 }).ScheduleParallel();
             
-            
             //Put vehicle segment map into class variable, to use burst and jobs in dots you can't pass static fields.
             //Thanks to that multihashmap is a struct so only value is copied to local variable.
             //That variable is later used inside of the ForEach method.
             var vehiclesSegmentsHashMap = CalculateCarsInSegmentsSystem.VehiclesSegmentsHashMap;
+
+            Entities
+                .WithReadOnly(vehiclesSegmentsHashMap)
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                        ref SegmentComponent segmentComponent,
+                        in SegmentConfigComponent segmentConfigComponent) =>
+                {
+                    var nextVehicleInSegment = Entity.Null;
+                    var nextVehicleInSegmentPosition = 0f;
+                    var newSegmentComponent = segmentComponent;
+                    
+                    var hashMapKey = new VehiclesInSegmentHashMapHelper();
+                    // Calculate distance which is available in front of the vehicle
+                    hashMapKey.FindVehicleInFrontInSegment(vehiclesSegmentsHashMap, entity, 0, ref nextVehicleInSegment, ref nextVehicleInSegmentPosition);
+                    newSegmentComponent.AvailableLength = nextVehicleInSegment != Entity.Null ? segmentConfigComponent.Length : nextVehicleInSegmentPosition;
+
+                    segmentComponent = newSegmentComponent;
+                }).Schedule();
+
             
             //calculate next frame move intention
             Entities.WithReadOnly(vehiclesSegmentsHashMap)
@@ -84,7 +129,7 @@ namespace TrafficSimulation.Systems
                     in VehiclePositionComponent vehicleComponent, 
                     in VehicleConfigComponent vehicleConfigComponent) =>
                 {
-                    var hashMapKey = new CarsInSegmentsFindHelper();
+                    var hashMapKey = new VehiclesInSegmentHashMapHelper();
                    
                     var segment = vehicleSegmentInfoComponent.HeadSegment;
                     var nextVehicleInSegment = Entity.Null;
@@ -109,9 +154,7 @@ namespace TrafficSimulation.Systems
                         {
                             var nextSegmentComponent = GetComponent<SegmentComponent>(segment);
                             if (nextSegmentComponent.TrafficType == ConnectionTrafficType.Normal)
-                            {
                                 distance += nextSegmentComponent.AvailableLength;
-                            }
                         }
                     }
                     
