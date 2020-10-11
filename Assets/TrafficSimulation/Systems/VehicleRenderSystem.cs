@@ -11,14 +11,18 @@ namespace TrafficSimulation.Systems
         protected override void OnUpdate()
         {
             Entities
-                .ForEach((Entity entity, int entityInQueryIndex, ref Translation translation, ref Rotation rotation,
-                    in VehicleSegmentInfoComponent vehicleSegmentInfoComponent, in VehiclePositionComponent vehicleComponent) =>
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                    ref Translation translation, 
+                    ref Rotation rotation,
+                    in VehicleSegmentInfoComponent vehicleSegmentInfoComponent, 
+                    in VehiclePositionComponent vehicleComponent,
+                    in VehicleConfigComponent vehicleConfigComponent) =>
                 {
                     var oldTranslation = translation;
                     var spline = GetComponent<SplineComponent>(vehicleSegmentInfoComponent.HeadSegment);
                     var length = spline.Length;
 
-                    var newTrans = new Translation {Value = spline.Point(vehicleComponent.HeadSegPos / length)};
+                    var newTrans = new Translation {Value = spline.Point((vehicleComponent.HeadSegPos - vehicleConfigComponent.Length/2) / length)};
 
                     var translationChange = oldTranslation.Value - newTrans.Value;
                     var newRotation = new Rotation
