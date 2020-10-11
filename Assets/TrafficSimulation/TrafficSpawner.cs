@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TrafficSimulation;
-using TrafficSimulation.Components;
 using TrafficSimulation.Components.Buffers;
 using TrafficSimulation.Components.Road;
 using TrafficSimulation.Components.Vehicle;
 using TrafficSimulation.RoadNetworkSetup;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
