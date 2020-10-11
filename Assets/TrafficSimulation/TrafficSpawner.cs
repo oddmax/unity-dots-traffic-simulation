@@ -40,30 +40,32 @@ public class TrafficSpawner : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
         {
             var carEntity = dstManager.Instantiate(carPrefab);
 
-            var vehicleComponent = dstManager.GetComponentData<VehicleComponent>(carEntity);
+            var vehicleComponent = dstManager.GetComponentData<VehiclePositionComponent>(carEntity);
             var vehicleSegmentInfoComponent = dstManager.GetComponentData<VehicleSegmentInfoComponent>(carEntity);
 
             var segmentIndex = Random.Range(0, roadSegments.Count);
             var segmentEntity = roadSegments[segmentIndex];
             var segmentComponent = dstManager.GetComponentData<SegmentConfigComponent>(segmentEntity);
 
-            vehicleComponent.CurrentSegPos = Random.Range(0f, segmentComponent.Length);
+            vehicleComponent.HeadSegPos = segmentComponent.Length;
+            vehicleComponent.BackSegPos = vehicleComponent.HeadSegPos - 0.2f;
 
             var translation = dstManager.GetComponentData<Translation>(carEntity);
 
             var startNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.StartNode);
             var endNodeComponent = dstManager.GetComponentData<RoadNodeComponent>(segmentComponent.EndNode);
 
-            vehicleSegmentInfoComponent.Segment = segmentEntity;
+            vehicleSegmentInfoComponent.HeadSegment = segmentEntity;
+            vehicleSegmentInfoComponent.BackSegment = segmentEntity;
             vehicleSegmentInfoComponent.SegmentLength = segmentComponent.Length;
-            vehicleSegmentInfoComponent.NextNode = segmentComponent.EndNode;
 
-            translation.Value = math.lerp(endNodeComponent.Position, startNodeComponent.Position,
-                vehicleComponent.CurrentSegPos);
+            //var splineComponent = dstManager.GetComponentData<SplineComponent>(segmentEntity);
+
+            //translation.Value = splineComponent.Point(vehicleComponent.HeadSegPos/segmentComponent.Length);
 
             dstManager.SetComponentData(carEntity, vehicleComponent);
             dstManager.SetComponentData(carEntity, vehicleSegmentInfoComponent);
-            dstManager.SetComponentData(carEntity, translation);
+            //dstManager.SetComponentData(carEntity, translation);
         }
     }
 
