@@ -17,7 +17,7 @@ namespace TrafficSimulation
     
     public class RoadNetworkGenerator
     {
-        private const float MINIMUM_PROXIMITY = 0.01f; 
+        private const float MINIMUM_PROXIMITY = 0.3f; 
         private RoadPiece[] roadPieces;
         
         private List<NodeGenerationInfo> nodesList = new List<NodeGenerationInfo>();
@@ -70,7 +70,10 @@ namespace TrafficSimulation
                     segments.Add(segmentEntity);
                     roadSegmentsMap.Add(segment, segmentEntity);
                 }
+            }
 
+            foreach (var roadPiece in roadPieces)
+            {
                 //is intersection
                 if (roadPiece.intersectionGroups.Length > 0)
                 {
