@@ -5,7 +5,7 @@ using Unity.Entities;
 
 namespace TrafficSimulation.Systems
 {
-    [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
+    [UpdateAfter(typeof(VehicleMovementSystem))]
     public class IntersectionSystem : SystemBase
     {
         EndSimulationEntityCommandBufferSystem endSimulationEcbSystem;
@@ -101,6 +101,14 @@ namespace TrafficSimulation.Systems
                     }
 
                 }).ScheduleParallel();
+
+            Entities.ForEach((Entity entity, int entityInQueryIndex,
+                ref IntersectionTimerComponent intersectionTimerComponent) =>
+            {
+                intersectionTimerComponent.FramesLeft = intersectionTimerComponent.FramesLeft > 0
+                    ? intersectionTimerComponent.FramesLeft - 1
+                    : 0;
+            }).ScheduleParallel();
         }
         
     }
