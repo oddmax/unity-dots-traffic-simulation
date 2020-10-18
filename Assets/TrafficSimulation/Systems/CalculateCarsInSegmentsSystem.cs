@@ -8,6 +8,7 @@ namespace TrafficSimulation.Systems
     {
         public Entity Entity;
         public float BackSegPosition;
+        public float VehicleSize;
     }
     
     /// <summary>
@@ -40,7 +41,8 @@ namespace TrafficSimulation.Systems
             NativeMultiHashMap<Entity, VehicleSegmentData>.ParallelWriter multiHashMap = VehiclesSegmentsHashMap.AsParallelWriter();
             var jobHandle = Entities.ForEach((Entity entity, int entityInQueryIndex,
                 in VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
-                in VehiclePositionComponent vehiclePositionComponent) =>
+                in VehiclePositionComponent vehiclePositionComponent,
+                in VehicleConfigComponent vehicleConfigComponent) =>
             {
                 Entity segmentEntity = vehicleSegmentInfoComponent.IsBackInPreviousSegment
                     ? vehicleSegmentInfoComponent.PreviousSegment
@@ -48,7 +50,8 @@ namespace TrafficSimulation.Systems
                 multiHashMap.Add(segmentEntity, new VehicleSegmentData
                 {
                     Entity = entity,
-                    BackSegPosition = vehiclePositionComponent.BackSegPos
+                    BackSegPosition = vehiclePositionComponent.BackSegPos,
+                    VehicleSize = vehicleConfigComponent.Length
                 });
             }).Schedule(this.Dependency);
             jobHandle.Complete();
