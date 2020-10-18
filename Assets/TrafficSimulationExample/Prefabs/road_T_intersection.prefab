@@ -86,57 +86,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e96578a29904f8f88b7482c4107690, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1251139559705042701
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3615929103750561187}
-  - component: {fileID: 6061884401330834944}
-  m_Layer: 0
-  m_Name: RoadSegment6
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3615929103750561187
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1251139559705042701}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -14}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1965972947512166070}
-  m_RootOrder: 12
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6061884401330834944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1251139559705042701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df993165e7a3d4f018d84d3275729044, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurveIn: 4.23
-  StartNode: {fileID: 1963198710418549923}
-  EndNode: {fileID: 1639704186092865702}
-  MovementDirection:
-    x: 0
-    y: 0
-    z: 0
-  Length: 0
 --- !u!1 &2725100241078083990
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +148,7 @@ GameObject:
   - component: {fileID: 4506503670156539561}
   - component: {fileID: 2110083961362705466}
   m_Layer: 0
-  m_Name: RoadSegment7
+  m_Name: RoadSegment6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -217,7 +166,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1965972947512166070}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2110083961362705466
 MonoBehaviour:
@@ -430,7 +379,7 @@ GameObject:
   - component: {fileID: 1965972947512166070}
   - component: {fileID: 1716602624407644597}
   m_Layer: 0
-  m_Name: t_intersection
+  m_Name: road_T_intersection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -459,7 +408,6 @@ Transform:
   - {fileID: 6579404978414851644}
   - {fileID: 3176473326996363683}
   - {fileID: 7805377954962949214}
-  - {fileID: 3615929103750561187}
   - {fileID: 4506503670156539561}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -482,9 +430,31 @@ MonoBehaviour:
   - {fileID: 6841073504971498432}
   - {fileID: 286521960086826502}
   - {fileID: 6694196939899183528}
+  - {fileID: 1639704186092865702}
+  - {fileID: 3904117285791839270}
   RoadSegments:
   - {fileID: 1438027028952580785}
   - {fileID: 963431004837367176}
+  - {fileID: 5300398185151139309}
+  - {fileID: 9222264164150560271}
+  - {fileID: 894056957753687487}
+  - {fileID: 2110083961362705466}
+  intersectionGroups:
+  - Segments:
+    - {fileID: 1438027028952580785}
+    - {fileID: 963431004837367176}
+    - {fileID: 5300398185151139309}
+    Time: 60
+  - Segments:
+    - {fileID: 1438027028952580785}
+    - {fileID: 9222264164150560271}
+    - {fileID: 894056957753687487}
+    Time: 70
+  - Segments:
+    - {fileID: 5300398185151139309}
+    - {fileID: 9222264164150560271}
+    - {fileID: 2110083961362705466}
+    Time: 60
 --- !u!1 &4323644064961700244
 GameObject:
   m_ObjectHideFlags: 0

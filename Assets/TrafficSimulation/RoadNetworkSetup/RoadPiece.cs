@@ -9,5 +9,7 @@ namespace TrafficSimulation.RoadNetworkSetup
         public RoadNode[] RoadNodes;
 
         public RoadSegment[] RoadSegments;
+        
+        public RoadIntersectionSegmentsGroup[] intersectionGroups;
     }
 }

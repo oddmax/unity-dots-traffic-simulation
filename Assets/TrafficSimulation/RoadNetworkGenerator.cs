@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using TrafficSimulation.Components;
 using TrafficSimulation.Components.Buffers;
+using TrafficSimulation.Components.Intersection;
 using TrafficSimulation.Components.Road;
 using TrafficSimulation.RoadNetworkSetup;
 using Unity.Entities;
@@ -40,6 +42,8 @@ namespace TrafficSimulation
         private List<Entity> GenerateSegmentEntities(Dictionary<RoadNode, Entity> roadNodes)
         {
             List<Entity> segments = new List<Entity>();
+            Dictionary<RoadSegment, Entity> roadSegmentsMap = new Dictionary<RoadSegment, Entity>();
+            
             foreach (var roadPiece in roadPieces)
             {
                 foreach (var segment in roadPiece.RoadSegments)
@@ -64,6 +68,36 @@ namespace TrafficSimulation
                         new SegmentComponent {AvailableLength = segmentComponent.Length});
 
                     segments.Add(segmentEntity);
+                    roadSegmentsMap.Add(segment, segmentEntity);
+                }
+
+                //is intersection
+                if (roadPiece.intersectionGroups.Length > 0)
+                {
+                    var intersectionEntity = dstManager.CreateEntity(typeof(IntersectionComponent));
+                    dstManager.AddBuffer<IntersectionSegmentsGroupBufferElement>(intersectionEntity);
+                    var intersectionSegmentBufferElements = dstManager.AddBuffer<IntersectionSegmentBufferElement>(intersectionEntity);
+                    var intersectionSegmentsGroupBufferElements =
+                        dstManager.GetBuffer<IntersectionSegmentsGroupBufferElement>(intersectionEntity);
+                    var counter = 0;
+                    for (int i = 0; i < roadPiece.intersectionGroups.Length; i++)
+                    {
+                        var group = roadPiece.intersectionGroups[i];
+                        intersectionSegmentsGroupBufferElements.Add(new IntersectionSegmentsGroupBufferElement
+                        {
+                            StartIndex = counter,
+                            EndIndex = counter + group.Segments.Length - 1,
+                            Time = group.Time
+                        });
+                        foreach (var roadSegment in group.Segments)
+                        {
+                            intersectionSegmentBufferElements.Add(new IntersectionSegmentBufferElement
+                            {
+                                Segment = roadSegmentsMap[roadSegment]
+                            });
+                            counter++;
+                        }
+                    }
                 }
             }
 
