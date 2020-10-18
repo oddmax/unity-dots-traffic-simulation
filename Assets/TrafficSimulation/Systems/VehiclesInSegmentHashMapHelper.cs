@@ -3,6 +3,9 @@ using Unity.Entities;
 
 namespace TrafficSimulation.Systems
 {
+    /// <summary>
+    /// Helper class to simplify readings from NativeHashMap which includes which vehicles are currently in which segment
+    /// </summary>
     public struct VehiclesInSegmentHashMapHelper
     {
         public void FindVehicleInFrontInSegment(

@@ -6,6 +6,11 @@ using Unity.Mathematics;
 
 namespace TrafficSimulation.Systems
 {
+    
+    /// <summary>
+    /// Main system which update vehicles positions on the road network, keeps distance from the front cars and blocked segments
+    /// and randomly chooses next segment to go
+    /// </summary>
     [UpdateInGroup(typeof(TrafficSimulationGroup))]
     [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
     public class VehicleMovementSystem : SystemBase

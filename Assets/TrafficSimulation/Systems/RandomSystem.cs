@@ -5,6 +5,7 @@ using Unity.Jobs.LowLevel.Unsafe;
 namespace TrafficSimulation.Systems
 {
     /// <summary>
+    /// Provides random number generation for usage in Unity ECS
     /// https://reeseschultz.com/random-number-generation-with-unity-dots/
     /// </summary>
     [UpdateInGroup(typeof(InitializationSystemGroup))]

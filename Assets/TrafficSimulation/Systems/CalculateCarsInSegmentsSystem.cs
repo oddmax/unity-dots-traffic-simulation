@@ -10,6 +10,10 @@ namespace TrafficSimulation.Systems
         public float BackSegPosition;
     }
     
+    /// <summary>
+    /// Calculates cars inside of the segments in the beginning of the frame and adds them to NativeMultiHashMap
+    /// later access
+    /// </summary>
     [UpdateInGroup(typeof(TrafficSimulationGroup))]
     public class CalculateCarsInSegmentsSystem : SystemBase
     {

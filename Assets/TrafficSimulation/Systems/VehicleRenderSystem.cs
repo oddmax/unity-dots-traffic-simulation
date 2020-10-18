@@ -6,6 +6,9 @@ using Unity.Transforms;
 
 namespace TrafficSimulation.Systems
 {
+    /// <summary>
+    /// Updates vehicle models position and rotations to match calculated by main movement system 
+    /// </summary>
     [UpdateInGroup(typeof(TrafficSimulationGroup))]
     [UpdateAfter(typeof(VehicleMovementSystem))]
     public class VehicleRenderSystem : SystemBase

@@ -5,6 +5,9 @@ using Unity.Entities;
 
 namespace TrafficSimulation.Systems
 {
+    /// <summary>
+    /// Updates intersections phases and sets segments in the intersections into correct traffic state
+    /// </summary>
     [UpdateInGroup(typeof(TrafficSimulationGroup))]
     [UpdateAfter(typeof(VehicleMovementSystem))]
     [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
