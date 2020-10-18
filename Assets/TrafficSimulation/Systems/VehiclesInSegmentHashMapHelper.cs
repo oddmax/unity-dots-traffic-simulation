@@ -38,5 +38,13 @@ namespace TrafficSimulation.Systems
                 } while (vehicleSegmentMap.TryGetNextValue(out segmentData, ref nativeMultiHashMapIterator));
             }
         }
+
+        public bool HasVehicleInSegment(
+            NativeMultiHashMap<Entity, VehicleSegmentData> vehicleSegmentMap,
+            Entity segmentEntity
+        )
+        {
+            return vehicleSegmentMap.CountValuesForKey(segmentEntity) > 0;
+        }
     }
 }

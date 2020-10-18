@@ -122,9 +122,9 @@ namespace TrafficSimulation.Systems
                     var nextVehicleInSegmentPosition = 0f;
                     var newSegmentComponent = segmentComponent;
                     
-                    var hashMapKey = new VehiclesInSegmentHashMapHelper();
+                    var hashMapKeyHelper = new VehiclesInSegmentHashMapHelper();
                     // Calculate distance which is available in front of the vehicle
-                    hashMapKey.FindVehicleInFrontInSegment(vehiclesSegmentsHashMap, entity, 0, ref nextVehicleInSegment, ref nextVehicleInSegmentPosition);
+                    hashMapKeyHelper.FindVehicleInFrontInSegment(vehiclesSegmentsHashMap, entity, 0, ref nextVehicleInSegment, ref nextVehicleInSegmentPosition);
                     newSegmentComponent.AvailableLength = nextVehicleInSegment == Entity.Null ? segmentConfigComponent.Length : nextVehicleInSegmentPosition;
 
                     segmentComponent = newSegmentComponent;
@@ -164,9 +164,10 @@ namespace TrafficSimulation.Systems
                         
                         if (distanceTillNode < MAX_DISTANCE && vehicleSegmentChangeIntention.NextSegment != Entity.Null)
                         {
-                            var nextSegmentComponent = GetComponent<SegmentComponent>(vehicleSegmentChangeIntention.NextSegment);
-                            if (nextSegmentComponent.TrafficType == ConnectionTrafficType.Normal)
-                                distance += nextSegmentComponent.AvailableLength;
+                            var nexSegmentTrafficTypeComp = GetComponent<SegmentTrafficTypeComponent>(vehicleSegmentChangeIntention.NextSegment);
+                            var nexSegmentComp = GetComponent<SegmentComponent>(vehicleSegmentChangeIntention.NextSegment);
+                            if (nexSegmentTrafficTypeComp.TrafficType == ConnectionTrafficType.Normal)
+                                distance += nexSegmentComp.AvailableLength;
                         }
                     }
                     
