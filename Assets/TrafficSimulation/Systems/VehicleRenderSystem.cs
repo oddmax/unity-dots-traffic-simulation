@@ -6,6 +6,8 @@ using Unity.Transforms;
 
 namespace TrafficSimulation.Systems
 {
+    [UpdateInGroup(typeof(TrafficSimulationGroup))]
+    [UpdateAfter(typeof(VehicleMovementSystem))]
     public class VehicleRenderSystem : SystemBase
     {
         protected override void OnUpdate()

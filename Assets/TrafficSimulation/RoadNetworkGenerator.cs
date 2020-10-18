@@ -49,7 +49,7 @@ namespace TrafficSimulation
                 foreach (var segment in roadPiece.RoadSegments)
                 {
                     var segmentEntity = dstManager.CreateEntity(typeof(SegmentConfigComponent), typeof(SplineComponent),
-                        typeof(SegmentComponent));
+                        typeof(SegmentComponent), typeof(SegmentTrafficTypeComponent));
 
                     var splineComponent = SplineComponent.CreateSpline(segment.StartNode.transform, segment.EndNode.transform,
                         segment.CurveIn);
@@ -74,7 +74,7 @@ namespace TrafficSimulation
                 //is intersection
                 if (roadPiece.intersectionGroups.Length > 0)
                 {
-                    var intersectionEntity = dstManager.CreateEntity(typeof(IntersectionComponent));
+                    var intersectionEntity = dstManager.CreateEntity(typeof(IntersectionComponent), typeof(IntersectionTimerComponent));
                     dstManager.AddBuffer<IntersectionSegmentsGroupBufferElement>(intersectionEntity);
                     var intersectionSegmentBufferElements = dstManager.AddBuffer<IntersectionSegmentBufferElement>(intersectionEntity);
                     var intersectionSegmentsGroupBufferElements =
@@ -91,11 +91,13 @@ namespace TrafficSimulation
                         });
                         foreach (var roadSegment in group.Segments)
                         {
+                            var segmentEntity = roadSegmentsMap[roadSegment];
                             intersectionSegmentBufferElements.Add(new IntersectionSegmentBufferElement
                             {
-                                Segment = roadSegmentsMap[roadSegment]
+                                Segment = segmentEntity
                             });
                             counter++;
+                            dstManager.SetComponentData(segmentEntity, new SegmentTrafficTypeComponent {TrafficType = ConnectionTrafficType.NoEntrance } );
                         }
                     }
                 }

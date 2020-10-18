@@ -6,6 +6,7 @@ using Unity.Mathematics;
 
 namespace TrafficSimulation.Systems
 {
+    [UpdateInGroup(typeof(TrafficSimulationGroup))]
     [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
     public class VehicleMovementSystem : SystemBase
     {

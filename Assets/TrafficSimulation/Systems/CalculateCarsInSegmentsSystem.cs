@@ -1,4 +1,3 @@
-using System;
 using TrafficSimulation.Components.Vehicle;
 using Unity.Collections;
 using Unity.Entities;
@@ -11,6 +10,7 @@ namespace TrafficSimulation.Systems
         public float BackSegPosition;
     }
     
+    [UpdateInGroup(typeof(TrafficSimulationGroup))]
     public class CalculateCarsInSegmentsSystem : SystemBase
     {
         public static NativeMultiHashMap<Entity, VehicleSegmentData> VehiclesSegmentsHashMap;
@@ -34,7 +34,7 @@ namespace TrafficSimulation.Systems
             }
             
             NativeMultiHashMap<Entity, VehicleSegmentData>.ParallelWriter multiHashMap = VehiclesSegmentsHashMap.AsParallelWriter();
-            Entities.ForEach((Entity entity, int entityInQueryIndex,
+            var jobHandle = Entities.ForEach((Entity entity, int entityInQueryIndex,
                 in VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
                 in VehiclePositionComponent vehiclePositionComponent) =>
             {
@@ -46,7 +46,8 @@ namespace TrafficSimulation.Systems
                     Entity = entity,
                     BackSegPosition = vehiclePositionComponent.BackSegPos
                 });
-            }).Run();
+            }).Schedule(this.Dependency);
+            jobHandle.Complete();
         }
     }
 }

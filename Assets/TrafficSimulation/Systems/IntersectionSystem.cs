@@ -5,7 +5,9 @@ using Unity.Entities;
 
 namespace TrafficSimulation.Systems
 {
+    [UpdateInGroup(typeof(TrafficSimulationGroup))]
     [UpdateAfter(typeof(VehicleMovementSystem))]
+    [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
     public class IntersectionSystem : SystemBase
     {
         EndSimulationEntityCommandBufferSystem endSimulationEcbSystem;
@@ -23,7 +25,7 @@ namespace TrafficSimulation.Systems
             BufferFromEntity<IntersectionSegmentBufferElement> intersectionSegments = GetBufferFromEntity<IntersectionSegmentBufferElement>(true);
             var vehiclesSegmentsHashMap = CalculateCarsInSegmentsSystem.VehiclesSegmentsHashMap;
 
-            Entities
+            var jobHandle = Entities
                 .WithReadOnly(vehiclesSegmentsHashMap)
                 .WithReadOnly(intersectionGroups)
                 .WithReadOnly(intersectionSegments)
@@ -79,12 +81,12 @@ namespace TrafficSimulation.Systems
                                     intersectionGroupsBufferElements.Length;
 
                                 var nextGroup =
-                                    intersectionGroupsBufferElements[intersectionComponent.CurrentGroupIndex];
+                                    intersectionGroupsBufferElements[newIntersectionComponent.CurrentGroupIndex];
 
                                 newIntersectionTimerComponent.FramesLeft = nextGroup.Time;
 
                                 //set next segments group to allow traffic
-                                for (int i = currentGroup.StartIndex; i <= currentGroup.EndIndex; i++)
+                                for (int i = nextGroup.StartIndex; i <= nextGroup.EndIndex; i++)
                                 {
                                     var segmentEntity = intersectionSegmentsBufferElements[i].Segment;
                                     SetComponent(segmentEntity, new SegmentTrafficTypeComponent
@@ -100,7 +102,8 @@ namespace TrafficSimulation.Systems
                             break;
                     }
 
-                }).ScheduleParallel();
+                }).Schedule(Dependency);
+            jobHandle.Complete();
 
             Entities.ForEach((Entity entity, int entityInQueryIndex,
                 ref IntersectionTimerComponent intersectionTimerComponent) =>
