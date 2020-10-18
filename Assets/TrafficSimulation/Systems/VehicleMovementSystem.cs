@@ -184,7 +184,7 @@ namespace TrafficSimulation.Systems
             if (distance > MAX_DISTANCE) 
                 velocity += ACCELERATION;
             else if (MIN_DISTANCE < distance && distance <= MAX_DISTANCE)
-                velocity -= ACCELERATION;
+                velocity -= ACCELERATION/5;
             else if (distance <= MIN_DISTANCE)
                 velocity = 0f;
 

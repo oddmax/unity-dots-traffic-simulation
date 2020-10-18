@@ -64,8 +64,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HeadSegment: {fileID: 0}
-  BackSegment: {fileID: 0}
   SegmentLength: 0
+  IsBackInPreviousSegment: 0
+  PreviousSegment: {fileID: 0}
+  PreviousSegmentLength: 0
   NextNode: {fileID: 0}
 --- !u!114 &7139287407005414915
 MonoBehaviour:
@@ -79,7 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fd1914101f4ba7a677ab3dfd4df817, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 3
+  Speed: 6
   Length: 5.6
 --- !u!114 &8790170596107652721
 MonoBehaviour:
@@ -133,8 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb836cd9814141098e8ff3e595fe7ca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NextFrontSegment: {fileID: 0}
-  NextBackSegment: {fileID: 0}
+  NextSegment: {fileID: 0}
 --- !u!1001 &7340541760430460131
 PrefabInstance:
   m_ObjectHideFlags: 0
