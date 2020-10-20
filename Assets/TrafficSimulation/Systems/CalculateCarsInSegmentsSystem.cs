@@ -19,9 +19,11 @@ namespace TrafficSimulation.Systems
     public class CalculateCarsInSegmentsSystem : SystemBase
     {
         public static NativeMultiHashMap<Entity, VehicleSegmentData> VehiclesSegmentsHashMap;
-        
+        private SyncPointSystem syncPointSystem;
+
         protected override void OnCreate() {
             VehiclesSegmentsHashMap = new NativeMultiHashMap<Entity, VehicleSegmentData>(0, Allocator.Persistent);
+            syncPointSystem = World.GetExistingSystem<SyncPointSystem>();
             base.OnCreate();
         }
 
@@ -39,7 +41,7 @@ namespace TrafficSimulation.Systems
             }
             
             NativeMultiHashMap<Entity, VehicleSegmentData>.ParallelWriter multiHashMap = VehiclesSegmentsHashMap.AsParallelWriter();
-            var jobHandle = Entities.ForEach((Entity entity, int entityInQueryIndex,
+            Dependency = Entities.ForEach((Entity entity, int entityInQueryIndex,
                 in VehicleSegmentInfoComponent vehicleSegmentInfoComponent,
                 in VehiclePositionComponent vehiclePositionComponent,
                 in VehicleConfigComponent vehicleConfigComponent) =>
@@ -53,8 +55,9 @@ namespace TrafficSimulation.Systems
                     BackSegPosition = vehiclePositionComponent.BackSegPos,
                     VehicleSize = vehicleConfigComponent.Length
                 });
-            }).Schedule(this.Dependency);
-            jobHandle.Complete();
+            }).ScheduleParallel(Dependency);
+            
+            syncPointSystem.AddJobHandleForProducer(Dependency);
         }
     }
 }

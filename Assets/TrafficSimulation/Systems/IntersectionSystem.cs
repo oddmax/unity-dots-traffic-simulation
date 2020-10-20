@@ -10,7 +10,6 @@ namespace TrafficSimulation.Systems
     /// </summary>
     [UpdateInGroup(typeof(TrafficSimulationGroup))]
     [UpdateAfter(typeof(VehicleMovementSystem))]
-    [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
     public class IntersectionSystem : SystemBase
     {
         EndSimulationEntityCommandBufferSystem endSimulationEcbSystem;
@@ -28,7 +27,7 @@ namespace TrafficSimulation.Systems
             BufferFromEntity<IntersectionSegmentBufferElement> intersectionSegments = GetBufferFromEntity<IntersectionSegmentBufferElement>(true);
             var vehiclesSegmentsHashMap = CalculateCarsInSegmentsSystem.VehiclesSegmentsHashMap;
 
-            var jobHandle = Entities
+            Dependency = Entities
                 .WithReadOnly(vehiclesSegmentsHashMap)
                 .WithReadOnly(intersectionGroups)
                 .WithReadOnly(intersectionSegments)
@@ -106,15 +105,14 @@ namespace TrafficSimulation.Systems
                     }
 
                 }).Schedule(Dependency);
-            jobHandle.Complete();
 
-            Entities.ForEach((Entity entity, int entityInQueryIndex,
+            /*Entities.ForEach((Entity entity, int entityInQueryIndex,
                 ref IntersectionTimerComponent intersectionTimerComponent) =>
             {
                 intersectionTimerComponent.FramesLeft = intersectionTimerComponent.FramesLeft > 0
                     ? intersectionTimerComponent.FramesLeft - 1
                     : 0;
-            }).ScheduleParallel();
+            }).ScheduleParallel();*/
         }
         
     }

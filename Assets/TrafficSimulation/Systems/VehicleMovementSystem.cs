@@ -12,7 +12,7 @@ namespace TrafficSimulation.Systems
     /// and randomly chooses next segment to go
     /// </summary>
     [UpdateInGroup(typeof(TrafficSimulationGroup))]
-    [UpdateAfter(typeof(CalculateCarsInSegmentsSystem))]
+    [UpdateAfter(typeof(SyncPointSystem))]
     public class VehicleMovementSystem : SystemBase
     {
         private const float MIN_DISTANCE = 0.2f;
