@@ -57,10 +57,10 @@ namespace TrafficSimulation.Systems
                     var newVehicleSegmentInfoComponent = vehicleSegmentInfoComponent;
 
                     newHeadSegPos = math.min(vehicleComponent.HeadSegPos + frameSpeed, vehicleComponent.HeadSegPos + moveIntention.AvailableDistance);
-                    
+
                     if (newHeadSegPos >= vehicleSegmentInfoComponent.SegmentLength)
                     {
-                        // choosing next random segment after the current one
+                        //changing segments
                         var newSegmentChangeIntention = segmentChangeIntention;
                         var newSegmentConfig = GetComponent<SegmentConfigComponent>(segmentChangeIntention.NextSegment);
                         
@@ -167,6 +167,11 @@ namespace TrafficSimulation.Systems
                         //there is no car in front in the same segment
                         var distanceTillNode = vehicleSegmentInfoComponent.SegmentLength - headSegPos;
                         distance = distanceTillNode;
+
+                        if (distance < MIN_DISTANCE && vehicleSegmentChangeIntention.NextSegment == Entity.Null)
+                        {
+                            ecb.DestroyEntity(entityInQueryIndex, entity);
+                        }
                         
                         if (distanceTillNode < MAX_DISTANCE && vehicleSegmentChangeIntention.NextSegment != Entity.Null)
                         {
@@ -175,6 +180,7 @@ namespace TrafficSimulation.Systems
                             if (nexSegmentTrafficTypeComp.TrafficType == ConnectionTrafficType.Normal)
                                 distance += nexSegmentComp.AvailableLength;
                         }
+                        
                     }
                     
                     //Calculate new velocity based on available distance
@@ -182,6 +188,7 @@ namespace TrafficSimulation.Systems
                     velocityComponent = new VehicleVelocityComponent {Value = newVelocity};
                     moveIntention = new VehicleMoveIntention {AvailableDistance = distance};
                 }).Schedule();
+            
             endSimulationEcbSystem.AddJobHandleForProducer(this.Dependency);
         }
 
@@ -203,45 +210,5 @@ namespace TrafficSimulation.Systems
             
             return velocity;
         }
-
-        
-        /*var isNextNodeExist = nodeConnectedSegmentsBuffer.Exists(vehicleSegmentInfoComponent.NextNode);
-        if (isNextNodeExist)
-        {
-            DynamicBuffer<ConnectedSegmentBufferElement> connectedSegmentBufferElements = 
-                nodeConnectedSegmentsBuffer[vehicleSegmentInfoComponent.NextNode];
-        
-            if (connectedSegmentBufferElements.Length > 0)
-            {
-                var random = randomArray[entityInQueryIndex];
-                var index = random.NextInt(0, connectedSegmentBufferElements.Length);
-                randomArray[entityInQueryIndex] = random;
-
-                var nextSegmentEntity = connectedSegmentBufferElements[index].segment;
-                var nextSegmentConfigComponent = GetComponent<SegmentConfigComponent>(nextSegmentEntity);
-                var nextSegmentComponent = GetComponent<SegmentComponent>(nextSegmentEntity);
-
-                if (nextSegmentComponent.TrafficType == ConnectionTrafficType.NoEntrance)
-                {
-                    valueToAddToAvailableLength = -vehicleConfigComponent.Length;
-                }
-                else
-                {
-                    vehicleSegmentInfoComponent = new VehicleSegmentInfoComponent
-                    {
-                        HeadSegment = nextSegmentEntity,
-                        SegmentLength = nextSegmentConfigComponent.Length,
-                        NextNode = nextSegmentConfigComponent.EndNode
-                    };
-                    valueToAddToAvailableLength = vehicleConfigComponent.Length;
-                    vehicleComponent = new VehicleComponent
-                    {
-                        HeadSegPos = 0
-                    };
-                }
-
-                isNextNodeExist = true;
-            }  
-        }*/
     }
 }
