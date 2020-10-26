@@ -27,7 +27,7 @@ namespace TrafficSimulation.Systems
             BufferFromEntity<IntersectionSegmentBufferElement> intersectionSegments = GetBufferFromEntity<IntersectionSegmentBufferElement>(true);
             var vehiclesSegmentsHashMap = CalculateCarsInSegmentsSystem.VehiclesSegmentsHashMap;
 
-            Dependency = Entities
+            var jobHandle = Entities
                 .WithReadOnly(vehiclesSegmentsHashMap)
                 .WithReadOnly(intersectionGroups)
                 .WithReadOnly(intersectionSegments)
@@ -105,14 +105,15 @@ namespace TrafficSimulation.Systems
                     }
 
                 }).Schedule(Dependency);
+            jobHandle.Complete();
 
-            /*Entities.ForEach((Entity entity, int entityInQueryIndex,
+            Entities.ForEach((Entity entity, int entityInQueryIndex,
                 ref IntersectionTimerComponent intersectionTimerComponent) =>
             {
                 intersectionTimerComponent.FramesLeft = intersectionTimerComponent.FramesLeft > 0
                     ? intersectionTimerComponent.FramesLeft - 1
                     : 0;
-            }).ScheduleParallel();*/
+            }).ScheduleParallel();
         }
         
     }
