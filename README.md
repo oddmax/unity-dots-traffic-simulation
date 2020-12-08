@@ -1,6 +1,7 @@
 # unity-dots-traffic-simulation
 
 Simple traffic system made in Unity DOTS stack
+
 Key points:
 * Allows to create road network by just putting pieces of roads next to each other
 * Simulates traffic movement of different speed
